@@ -1,0 +1,126 @@
+\documentclass[a4paper, 11pt, french]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc} 
+\usepackage[nomath]{kpfonts}
+\usepackage[margin=1.5cm,headheight=52pt,includeheadfoot]{geometry} %gestion de la page
+\usepackage{mathtools} %amsmath mis à jour
+\usepackage{amssymb} %symboles mathématiques
+\usepackage{latexsym}
+\usepackage{stmaryrd} 
+\usepackage{babel} %gestion du français
+\usepackage{microtype} %amélioration du texte
+\usepackage{graphicx} %gestion des images
+\usepackage{listings}
+\usepackage{enumitem,kantlipsum}
+\usepackage{float}
+
+\newcommand{\abs}[1]{\vert#1\vert}
+\newcommand{\norme}[1]{\Vert#1\Vert}
+\newcommand{\scal}[2]{<#1\vert#2>}
+
+
+\title{TER M1 : \\ NN and RKHS}
+\author{Matthieu Denis}
+
+\begin{document}
+	
+	\maketitle
+	\newpage
+	
+	\tableofcontents
+	\newpage
+	
+	\section*{Introduction : Réseau de neurone simple}
+	
+	Commencons par étudier un NN très simple : une fonction
+	$\Phi : (\mathbb{R}^m \times \mathbb{R}^{m \times m} \times \mathbb{R}^m) \times \mathbb{R} \to \mathbb{R}$ combinaison d'applications linéaires, sans non linéarités  intermédiaires  :
+	
+	\[ \Phi ((\beta, A, u), x) \coloneqq \frac{1}{m^{\alpha}} \beta^T
+		 \left( \frac{1}{m^{\gamma}} A \right) u x \]
+		 
+	On initialise $\theta^0 \coloneqq (\beta^0, A^0, u^0)$ de manière standarde : 
+	$ \forall i,j \in \{1, \cdots, m\} , \; u_i^0, A_{ij}^0, \beta_i^0 \sim_{iid} N(0, 1)$
+	
+	Nous montrerons quelques propriétés asymptotiques en la largeur des couches, et sur l'évolution des paramètres lors du premier pas de la descente de gradient.
+	
+	\subsection*{Lois suivant la largeur des couches $m$}
+	
+	\begin{itemize}
+		
+		\item Loi de $ || u^0 ||_2^2$ pour $m$ grand \\
+		
+		Comme $ || u^0 ||_2^2 = \sum_{i=1}^{m} (u_i^0)^2 \sim \chi^2 (m)$ et $ u_i^0 \sim \chi^2 (1)$, en appliquant le TCL aux $ u_i^0 $, on a :
+		
+		\[
+			\frac{|| u^0 ||_2^2 - m}{\sqrt{2m}} \sim_{m \to \infty}  N(0, 1)
+		\]
+	
+		C'est-à-dire que $ || u^0 ||_2^2 \sim N(m, 2m) $  pour $m$ grand. \\
+		
+		\item Loi de $ \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x $ sachant $ u^0 $ \\
+		
+		$ (A^0 u^0)_i = \sum_{j=1}^m A_{ij}^0 u_j^0$. En sachant $u^0$, comme 
+		$A_{i \cdot}^0$ est un vecteur gaussien, $(A^0 u^0)_i \sim  N(0, || u^0 ||_2^2 ) $. 
+	
+		De même, part indépendance des $A_{ij}^0$, les $(A^0 u^0)_i$ sont indépendants et $A^0 u^0 \sim N(0_m, || u^0 ||_2^2 \; Id_m)$.
+		
+		Ainsi, $ \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x $ | $ u^0 
+		\sim  N(0_m, \left( \frac{x}{m^{\gamma}} \right)^2 || u^0 ||_2^2 \; Id_m) $. \\
+		
+		\item Loi de $ \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x $ \\
+		
+		HISTOIRE DE MEME TRIBU ENGENDREE PAR U0 ET LE RESTE IMPLIQUE QUE CEST LA MEME CHOSE DECONDITIONNEE
+		
+		Donc $ \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x  \sim  N(0_m, 
+		\left( \frac{x}{m^{\gamma}} \right)^2 || u^0 ||_2^2 \; Id_m) $. \\
+		
+		\item Loi de $ || \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \; ||_2^2 $ pour $m$ grand
+		 \\
+		
+		On a $ \left( \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \right)_i^2 \sim  
+		\left( \frac{x}{m^{\gamma}} \right)^2 || u^0 ||_2^2 \cdot  \chi^2 (1) $, d'espérance 
+		$ \mu \coloneqq \left( \frac{x}{m^{\gamma}} \right)^2 || u^0 ||_2^2  $  et de variance \\
+		$ \sigma^2 \coloneqq 2 \left( \left( \frac{x}{m^{\gamma}} \right)^2 || u^0 ||_2^2  \right)^2 $.
+		
+		Donc en appliquant le TCL à ceux ci, on a :
+		
+		 \[
+		 	\frac{|| \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \; ||_2^2 - m \mu}{\sigma \sqrt{m}} \sim_{m \to \infty}  N(0, 1)
+		 \]
+		
+		C'est-à-dire que $|| \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \; ||_2^2 \sim 
+		N(m \mu, m \sigma^2) $  pour $m$ grand. \\
+		
+		\newpage
+		
+		\item Loi de $ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 $ sachant $x_2$, avec 
+		$x_2 = \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x$ \\
+		
+		On a 
+		$ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 | x_2 \sim N(0,  \frac{1}{m^{2\alpha}}||x||_2^2) $
+		\\
+		
+		\item Loi de $ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 $ \\
+		
+		On a 
+		$ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 \sim N(0,  \frac{1}{m^{2\alpha}}||x||_2^2) $
+		\\
+		
+	\end{itemize}
+	
+	\subsection*{Gradients}
+	
+	\[ \nabla_u \Phi = \frac{x}{m^{\alpha + \gamma}} \beta^T A \]
+	
+	\[ \nabla_{\beta} \Phi = \frac{x}{m^{\alpha + \gamma}} A u \]
+	
+	\[ \nabla_A \Phi = \frac{x}{m^{\alpha + \gamma}} \beta u^T \]
+	
+	
+	
+	
+	
+	
+\end{document}
