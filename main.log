@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.7) (preloaded format=pdflatex 2020.10.10)  7 JUN 2021 19:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.7) (preloaded format=pdflatex 2020.10.10)  8 JUN 2021 17:15
 entering extended mode
 **./main.tex
 (main.tex
@@ -421,7 +421,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 133--134
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 137--138
+Underfull \hbox (badness 10000) in paragraph at lines 136--137
 
  []
 
@@ -435,12 +435,17 @@ Underfull \hbox (badness 10000) in paragraph at lines 182--183
 
  []
 
-[5] [6] (main.aux) ) 
+[5]
+Underfull \hbox (badness 10000) in paragraph at lines 241--242
+
+ []
+
+[6] [7] (main.aux) ) 
 Here is how much of TeX's memory you used:
- 5224 strings out of 480235
- 75338 string characters out of 2881965
+ 5225 strings out of 480235
+ 75346 string characters out of 2881965
  381951 words of memory out of 3000000
- 21708 multiletter control sequences out of 15000+200000
+ 21709 multiletter control sequences out of 15000+200000
  544687 words of font info for 70 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  70i,13n,77p,284b,424s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -460,9 +465,9 @@ ers/CM/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C
 pfb><C:/Users/CM/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/c
 msy8.pfb><C:/Users/CM/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts
 /symbols/msbm10.pfb>
-Output written on main.pdf (6 pages, 161964 bytes).
+Output written on main.pdf (7 pages, 164174 bytes).
 PDF statistics:
- 77 PDF objects out of 1000 (max. 8388607)
+ 82 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

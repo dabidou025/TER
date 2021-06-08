@@ -132,108 +132,120 @@
 
 	Il semble honnête de prendre $\eta$ dépendant de $m$, le produit scalaire final ayant plus de chance d'exploser en grande dimension. Prenons $\eta \coloneqq m^a$, $a \in \mathbb{R}$ \\
 	
-	\begin{itemize}
-		
+	\begin{itemize}	
 		\item Choix de $\eta$  \\
+	\end{itemize}
 		
-		On veut que $\Delta F$ ne diverge pas ni ne tende vers 0 lorsque m tend vers l'infini.
-		
-		Pour cela, on utilise l'approximation 
-		$\Delta F \simeq \; < \Delta \theta, \nabla_{\theta} F(\Phi(\theta^0, x)) >$.
-		
-		On a 
-		\[
-			\Delta F \simeq \; < -\eta \nabla_{\theta} F(\Phi(\theta^0, x)) , \nabla_{\theta} F(\Phi(\theta^0, x)) > = -\eta || \nabla_{\theta} F(\Phi(\theta^0, x)) ||^2
-		\]
-		
-		\[
-			\nabla_{\theta} F(\Phi(\theta^0, x)) = 
-			\underbrace{F'(\Phi(\theta^0, x))}_\text{constante en $m$} 
-			\cdot \nabla_{\theta} \Phi(\theta^0, x)
-		\]
-		
-		Or $ || \nabla_{\theta} \Phi(\theta^0, x) ||^2 = || \nabla_{u} \Phi(\theta^0, x) ||^2
-		+ || \nabla_{A} \Phi(\theta^0, x) ||^2 + || \nabla_{\beta} \Phi(\theta^0, x) ||^2 $ \\
-		
-		En faisant les mêmes types de calculs que dans la partie précédente, et en utilisant la loi des grands nombres, on trouve que pour $m$ grand :
-		
-		\[ || \nabla_{u} \Phi(\theta^0, x) ||^2 = C^2 \cdot || (\beta^0)^T A ||^2 \simeq
-		cste \cdot C^2 \cdot m ||\beta^0||^2 \simeq cste \cdot C \cdot m^2 \; 
-		\text{ avec $C \coloneqq \frac{x}{m^{\alpha + \gamma}}$} \]
-		
-		\[ || \nabla_{\beta} \Phi(\theta^0, x) ||^2 = C^2 \cdot || A u ||^2 \simeq
-		cste \cdot C^2 \cdot m ||u^0||^2 \simeq cste \cdot C^2 \cdot m^2 \]
-		
-		Pour $|| \nabla_{u} \Phi(\theta^0, x) ||^2$, en considérant le gradient en $A$ comme un vecteur de la matrice des dérivées partielles applatie, on a 
-		$|| \beta^0 (u^0)^T ||^2 = \sum_{i,j = 1}^m (\beta^0_i u^0_j)^2$. On fait face à une gaussiène puissance 4 : elle admet une espérance finie indépendante de $m$, donc en appliquant la LGN, on a :
-		
-		\[ || \nabla_{u} \Phi(\theta^0, x) ||^2 = C^2 \cdot || (\beta^0)^T A || \simeq
-		cste \cdot C^2 \cdot m^2 \]
-		
-		Ainsi, pour $m$ grand :
-		\begin{align*}
-			\Delta F &\simeq -\eta || \nabla_{\theta} F(\Phi(\theta^0, x)) ||^2 \\
-			&= - cste \cdot \eta || \nabla_{\theta} \Phi(\theta^0, x) ||^2 \\
-			&\simeq - cste \cdot C^2 \eta (m^2 + m^2 + m^2) \\
-			&= -cste \cdot m^{-2} m^a m^2 \; \text{ en prenant $\alpha = \gamma = 1/2$}\\
-			&= -cste \cdot  m^a
-		\end{align*}	
-		
-		Ce qui nous force le choix $a = 0$ pour que tout se passe bien. \\
-		
-		A présent, regardons les comment les paramètres ont évolué après ce premier pas de descente de gradient, i.e les ordres de grandeur des $\Delta$.
-		On prend $\eta = \mathcal{O}(1)$, les résultats ci-dessus ne changent pas.
-
-		
-		 \begin{align*}
-		 	\Delta u &= - \eta \nabla_u F(\Phi(\theta^0, x)) \\
-		 	&= - \eta F'(\Phi(\theta^0, x)) \cdot \nabla_{u} \Phi(\theta^0, x) \\
-		 	&= -\eta \, C \, d \, (\beta^0)^T A \; \text{avec $d \coloneqq F'(\Phi(\theta^0, x))$} \\
-		 	&= -\eta \, x \, d \, m^{-1} \, (\beta^0)^T A
-		 \end{align*}
-	 
-	 	\begin{align*}
-	 		| (\Delta u)_i | &= \eta \, |x \, d| \, m^{-1} 
-	 		\left| \sum_{j = 1}^{m} A_{ji} \beta_j \right| \\
-	 		&\leq \eta \, |x \, d| \, m^{-1} \sum_{j = 1}^{m} | A_{ji} \beta_j | \\
-	 		&\leq  \eta \, |x \, d| \, m^{-1} \cdot m \sup_j | A_{ji} \beta_j | \\
-	 		&\leq \eta \, |x \, d| \, \sup_{ij} | A_{ji} \beta_j |
-	 	\end{align*}
- 	
- 		Donc
- 		
- 		\begin{align*}
- 			|| \Delta u|| &= \left( \sum_{i = 1}^{m} | (\Delta u)_i |^2 \right)^{1/2} \\
- 			&\leq ( m \, (\eta \, |x \, d| \, \sup_{ij} | A_{ji} \beta_j | )^2 )^{1/2} \\
- 			&= \eta \, |x \, d| \, \sup_{ij} | A_{ji} \beta_j | \cdot m^{1/2} \\
- 			&= \mathcal{O}(m^{1/2})
- 		\end{align*}
-		
-		De la même manière :
-		
-		\begin{align*}
- 			||\Delta \beta|| &\leq \eta \, |x \, d| \, \sup_{ij} | A_{ij} u_j | \cdot m^{1/2} \\
-			&= \mathcal{O}(m^{1/2})
-		\end{align*}
+	On veut que $\Delta F$ ne diverge pas ni ne tende vers 0 lorsque m tend vers l'infini.
 	
-		\begin{align*}
-			|(\Delta A)_{ij}| &= | -\eta \, x \, d \, m^{-1} \, (\beta^0 (u^0)^T)_{ij} | \\
-			&= \eta \, |x \, d| \, m^{-1} \, |\beta^0_i u^0_j| \\
-			&\leq \eta \, |x \, d| \, m^{-1} \, \sup_{ij} |\beta^0_i u^0_j| \\
-			&= \mathcal{O}(m^{-1})
-		\end{align*}
+	Pour cela, on utilise l'approximation 
+	$\Delta F \simeq \; < \Delta \theta, \nabla_{\theta} F(\Phi(\theta^0, x)) >$.
+	
+	On a 
+	\[
+		\Delta F \simeq \; < -\eta \nabla_{\theta} F(\Phi(\theta^0, x)) , \nabla_{\theta} F(\Phi(\theta^0, x)) > = -\eta || \nabla_{\theta} F(\Phi(\theta^0, x)) ||^2
+	\]
+	
+	\[
+		\nabla_{\theta} F(\Phi(\theta^0, x)) = 
+		\underbrace{F'(\Phi(\theta^0, x))}_\text{constante en $m$} 
+		\cdot \nabla_{\theta} \Phi(\theta^0, x)
+	\]
+	
+	Or $ || \nabla_{\theta} \Phi(\theta^0, x) ||^2 = || \nabla_{u} \Phi(\theta^0, x) ||^2
+	+ || \nabla_{A} \Phi(\theta^0, x) ||^2 + || \nabla_{\beta} \Phi(\theta^0, x) ||^2 $ \\
+	
+	En faisant les mêmes types de calculs que dans la partie précédente, et en utilisant la loi des grands nombres, on trouve que pour $m$ grand :
+	
+	\[ || \nabla_{u} \Phi(\theta^0, x) ||^2 = C^2 \cdot || (\beta^0)^T A ||^2 \simeq
+	cste \cdot C^2 \cdot m ||\beta^0||^2 \simeq cste \cdot C \cdot m^2 \; 
+	\text{ avec $C \coloneqq \frac{x}{m^{\alpha + \gamma}}$} \]
+	
+	\[ || \nabla_{\beta} \Phi(\theta^0, x) ||^2 = C^2 \cdot || A u ||^2 \simeq
+	cste \cdot C^2 \cdot m ||u^0||^2 \simeq cste \cdot C^2 \cdot m^2 \]
+	
+	Pour $|| \nabla_{A} \Phi(\theta^0, x) ||^2$, en considérant le gradient en $A$ comme un vecteur de la matrice des dérivées partielles applatie, on a 
+	$|| \beta^0 (u^0)^T ||^2 = \sum_{i,j = 1}^m (\beta^0_i u^0_j)^2$. On fait face à une gaussiène puissance 4 : elle admet une espérance finie indépendante de $m$, donc en appliquant la LGN, on a :
+	
+	\[ || \nabla_{A} \Phi(\theta^0, x) ||^2 = C^2 \cdot || (\beta^0)^T A || \simeq
+	cste \cdot C^2 \cdot m^2 \]
+	
+	Ainsi, pour $m$ grand :
+	\begin{align*}
+		\Delta F &\simeq -\eta || \nabla_{\theta} F(\Phi(\theta^0, x)) ||^2 \\
+		&= - cste \cdot \eta || \nabla_{\theta} \Phi(\theta^0, x) ||^2 \\
+		&\simeq - cste \cdot C^2 \eta (m^2 + m^2 + m^2) \\
+		&= -cste \cdot m^{-2} m^a m^2 \; \text{ en prenant $\alpha = \gamma = 1/2$}\\
+		&= -cste \cdot  m^a
+	\end{align*}	
+	
+	Ce qui nous force le choix $a = 0$ pour que tout se passe bien. \\
+	
+	A présent, regardons les comment les paramètres ont évolué après ce premier pas de descente de gradient, i.e les ordres de grandeur des $\Delta$.
+	On prend $\eta = \mathcal{O}(1)$, les résultats ci-dessus ne changent pas.
+
+	
+ \begin{align*}
+	 	\Delta u &= - \eta \nabla_u F(\Phi(\theta^0, x)) \\
+	 	&= - \eta F'(\Phi(\theta^0, x)) \cdot \nabla_{u} \Phi(\theta^0, x) \\
+	 	&= -\eta \, C \, d \, (\beta^0)^T A^0 \; \text{avec $d \coloneqq F'(\Phi(\theta^0, x))$} \\
+	 	&= -\eta \, x \, d \, m^{-1} \, (\beta^0)^T A^0
+ \end{align*}
+
+ 	\begin{align*}
+ 		| (\Delta u)_i | &= \eta \, |x \, d| \, m^{-1} 
+ 		\left| \sum_{j = 1}^{m} A^0_{ji} \beta^0_j \right| \\
+ 		&\leq \eta \, |x \, d| \, m^{-1} \sum_{j = 1}^{m} | A^0_{ji} \beta^0_j | \\
+ 		&\leq  \eta \, |x \, d| \, m^{-1} \cdot m \sup_j | A^0_{ji} \beta^0_j | \\
+ 		&\leq \eta \, |x \, d| \, \sup_{ij} | A^0_{ji} \beta^0_j |
+ 	\end{align*}
 	
 		Donc
 		
 		\begin{align*}
-			||\Delta A||_F &= \left( \sum_{i,j = 1}^{m} | (\Delta A)_{ij} |^2 \right)^{1/2} \\
-			&\leq ( m^2 (\eta \, |x \, d| \, m^{-1} \, \sup_{ij} |\beta^0_i u^0_j|)^2 )^{1/2} \\
-			&= \eta \, |x \, d| \, \sup_{ij} |\beta^0_i u^0_j| \\
-			&= \mathcal{O}(1)
+			|| \Delta u|| &= \left( \sum_{i = 1}^{m} | (\Delta u)_i |^2 \right)^{1/2} \\
+			&\leq ( m \, (\eta \, |x \, d| \, \sup_{ij} | A^0_{ji} \beta^0_j | )^2 )^{1/2} \\
+			&= \eta \, |x \, d| \, \sup_{ij} | A^0_{ji} \beta^0_j | \cdot m^{1/2} \\
+			&= \mathcal{O}(m^{1/2})
 		\end{align*}
-		
- 
-		\end{itemize}
 	
+	De la même manière :
+	
+	\begin{align*}
+			||\Delta \beta|| &\leq \eta \, |x \, d| \, \sup_{ij} | A^0_{ij} u^0_j | \cdot m^{1/2} \\
+		&= \mathcal{O}(m^{1/2})
+	\end{align*}
+
+	\begin{align*}
+		|(\Delta A)_{ij}| &= | -\eta \, x \, d \, m^{-1} \, (\beta^0 (u^0)^T)_{ij} | \\
+		&= \eta \, |x \, d| \, m^{-1} \, |\beta^0_i u^0_j| \\
+		&\leq \eta \, |x \, d| \, m^{-1} \, \sup_{ij} |\beta^0_i u^0_j| \\
+		&= \mathcal{O}(m^{-1})
+	\end{align*}
+
+	Donc
+	
+	\begin{align*}
+		||\Delta A||_F &= \left( \sum_{i,j = 1}^{m} | (\Delta A)_{ij} |^2 \right)^{1/2} \\
+		&\leq ( m^2 (\eta \, |x \, d| \, m^{-1} \, \sup_{ij} |\beta^0_i u^0_j|)^2 )^{1/2} \\
+		&= \eta \, |x \, d| \, \sup_{ij} |\beta^0_i u^0_j| \\
+		&= \mathcal{O}(1)
+	\end{align*}
+
+	On peut faire mieux pour $||\Delta u||$ et $||\Delta \beta||$, en utilisant leurs propriétés aléatoires :
+	\begin{align*}
+		||\Delta u|| &=  \eta \nabla_u F(\Phi(\theta^0, x)) \\
+		&= \eta \, |x \, d| \, m^{-1} \, ||(\beta^0)^T A^0||
+	\end{align*}
+	
+	Or $||(\beta^0)^T A^0||^2 \simeq ||\beta^0||m$ et $||\beta^0|| \simeq m$ pour m grand, donc $||(\beta^0)^T A^0|| \simeq m$ pour m grand.\\
+	
+	D'où $ ||\Delta u|| = \mathcal{O}(1) $ pour m grand. Et par la même gymnastique, $ ||\Delta \beta|| = \mathcal{O}(1) $ pour m grand.
+	
+	\newpage
+	
+	\subsection{$\gamma = 1/2$}
+	
+	\[\nabla_u \Phi = \frac{x}{m^{\alpha + 1/2}} A^T \beta\]
 	
 \end{document}
