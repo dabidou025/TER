@@ -6,12 +6,22 @@
 \usepackage{latexsym}
 \usepackage{stmaryrd} 
 \usepackage{babel} %gestion du français
+\usepackage{amsthm}
 
 \renewcommand{\labelitemi}{∙}
 
 \newcommand{\abs}[1]{\vert#1\vert}
 \newcommand{\norme}[1]{\Vert#1\Vert}
 \newcommand{\scal}[2]{<#1\vert#2>}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Définition}
+
+\newtheorem{theorem}{Théorème}
+
+\newtheorem{property}{Propriété}
+
+\renewcommand\qedsymbol{$\blacksquare$}
 
 
 \title{TER M1 : \\ NN and RKHS}
@@ -24,6 +34,151 @@
 	
 	\tableofcontents
 	\newpage
+	
+	\section{Reproducing Kernel Hilbert space (RKHS)}
+	
+	Nous allons dans cette section s'intéresser aux RKHS, des espaces de Hilbert réels qui satisfont certaines propriétés, et qui ont des applications intéressantes en machine learning. Par exemple, on montrera un théorème qui nous permet de simplifier un problème de minimisation de risque empirique de dimension infini à un problème en dimension fini. Ou encore des applications dans plusieurs algorithmes de ML, les transformant d'algorithmes linéaires à non-linéaires à très faible prix, et d'autres encore. \\
+	
+	Soit $X$ un ensemble quelconque, $H$ un espace de Hilbert de fonctions réelles sur $X$, muni de l'addition point par point ainsi que de la multiplication par scalaire point par point. On introduit aussi une forme linéaire qui à chaque fonction de $H$ l'évalue en un certain point $x \in X$,
+	
+	\[L_x : f \mapsto f(x) \; \forall f \in H\]
+		
+	\begin{definition}[RKHS]
+		On dit d'un espace de Hilbert qu'il est un RKHS si $\forall x \in X$, $L_x$ est continue sur $H$, ou encore si $L_x$ est bornée sur $H$, i.e
+		\[\forall x \in X, \;  \exists M_x > 0, \; \forall f \in H \text{ t.q } |L_x(f)| \coloneqq |f(x)| \leq M_x ||f||_H\]
+	\end{definition}
+
+	Dans ce qui suit, $H$ sera un RKHS.
+
+	\begin{property}[Convergence en norme dans un RKHS implique pointwise convergence]
+		Soient $f_n, \, f \in H$. Si $f_n \stackrel{H}{\to} f$, alors $\forall x \in X, \; f_n(x) \to f(x)$.
+	\end{property}
+	\begin{proof}
+		\begin{align*}
+			\forall x \in X, \; |f_n(x) - f(x)| = |L_x(f_n) - L_x(f)| = |L_x(f_n - f)| \leq M_x||f_n - f||_H
+		\end{align*}
+	\end{proof}
+
+	\begin{definition}[Noyau / Kernel]
+		Une fonction $k : X \times X \to \mathbb{R}$ est un noyau si
+		\[ \exists \phi : X \to H \text{ t.q } k(x,y) = \langle \phi (x), \phi(y) \rangle_H \; \forall x,y \in X \]
+	\end{definition}
+
+	\begin{property}
+		Tout noyau $k$ est symétrique défini positif.
+	\end{property}
+	\begin{proof}
+		\begin{itemize}
+			\item[$\bullet$] Symétrie : découle de la symétrie du produit scalaire.			
+			\item[$\bullet$] Défini positif : \\
+			$\forall x_1, \cdots, x_n \in X, \forall c_1, \cdots, c_n \in X$
+			\[\sum_{i,j=1}^{n} c_i c_j k(x_i, x_j) = \left\langle \sum_{i=1}^{n} c_i \phi(x_i), \sum_{j=1}^{n} c_j \phi(x_j) \right\rangle_H = \left|\left|\sum_{i=1}^{n} c_i \phi(x_i)\right|\right|_H^2\ \geq 0\]
+		\end{itemize}
+	\end{proof}
+
+	\begin{definition}[Noyau reproduisant / Reproducing kernel]
+		Une fonction $k : X \times X \to \mathbb{R}$ est un noyau reproduisant de H si $\forall x \in X, \, f \in H$ :
+		\begin{itemize}
+			\item[$\bullet$] $k(\cdot, x) \in H$			
+			\item[$\bullet$] $f(x) = \langle f, k(\cdot, x) \rangle_H$
+		\end{itemize}
+	\end{definition}
+
+	\newpage
+
+	\begin{property}
+		Tout noyau reproduisant $k$ est un noyau.
+	\end{property}
+	\begin{proof}
+		En prenant $f = k(\cdot, y) \in H$ pour un certain $y \in X$ dans la définition, on a en particulier $\forall x, y \in X \; k(x,y) = \langle k(\cdot, x), k(\cdot, y) \rangle_H$. Ici $\phi(u) = k(\cdot, u) \; \forall u \in X$.
+	\end{proof}
+
+	\begin{theorem}[Théorème de représentation de Riesz]
+		Soient :
+		\begin{itemize}
+			\item[$\bullet$] $H$ un espace de Hilbert réel, muni de son produit scalaire $\langle \cdot, \cdot \rangle_H$
+			\item[$\bullet$] $L \in H'$ une forme linéaire continue sur $H$.
+		\end{itemize}
+		Alors \[\exists ! \, g \in H, \; \forall f \in H, \; L(f) = \langle f, g \rangle_H\]
+	\end{theorem}
+
+	\begin{property}[Existence et Unicité]
+		Il existe un unique noyau reproduisant de $H$.
+	\end{property}
+	\begin{proof}
+		Montrons l'existence puis l'unicité : \\
+		\begin{itemize}
+			\item[$\bullet$]
+			On applique le théorème de Riesz à $L_x$ :
+			\[\forall x \in X, \; \exists ! \, k_x \in H, \; \forall f \in H, \; f(x) = L_x (f) = \langle f, k_x \rangle_H\]
+			Soit $k(y, x) \coloneqq k_x(y) \; \forall x,y \in X$, alors $\forall x \in X, \, f \in H, \; k(\cdot, x) \in H$ et  $f(x) = \langle f, k(\cdot, x) \rangle_H$.
+			
+			Donc $k$ est un noyau reproduisant de $H$.
+			
+			\item[$\bullet$]
+			Soient $k_1$ et $k_2$ deux noyau reproduisant de $H$. Alors $\forall x \in X, \, f \in H$
+			\[\langle f, k_1(\cdot, x) - k_2(\cdot, x) \rangle_H = f(x) - f(x) = 0\]
+			En prenant $f = k_1(\cdot, x) - k_2(\cdot, x)$, on a :
+			\[\left|\left| k_1(\cdot, x) - k_2(\cdot, x) \right|\right|_H^2 = 0\]
+			C'est-à-dire que $k_1 = k_2$ : le noyau reproduisant de $H$ est unique.
+		\end{itemize}
+	\end{proof}
+
+	\begin{theorem}[Lien des deux visions]
+		$H$ est un RKHS si et seulement si il existe un unique noyau reproduisant de $H$.
+	\end{theorem}
+	\begin{proof}
+		\begin{itemize}
+			\item[$\bullet$] $(\Rightarrow)$
+				Donné par la propriété 2.
+			\item[$\bullet$] $(\Leftarrow)$ $\forall x \in X, \, f \in H$
+				\[|L_x(f)| = |f(x)| = |\langle f, k(\cdot, x) \rangle_H| \leq ||f||_H ||k(\cdot,x)||_H = \underbrace{\sqrt{k(x,x)}}_{\text{$M_x$}} ||f||_H\]
+				$M_x$ ne dépendant pas de $f$, on a bien l'inégalité $\forall x \in X, \;  \exists M_x > 0, \; \forall f \in H$, i.e $H$ est un RKHS.
+		\end{itemize}
+	\end{proof}
+	
+	\begin{theorem}[Théorème de Moore-Aronszajn]
+	 	Soit K un kernel. Alors il existe un unique espace de Hilbert $H$ de fonctions sur $X$ pour lequel $K$ est un noyau reproduisant.
+	\end{theorem}
+	\begin{proof}
+		$\forall x \in X$, on pose $K_x(\cdot) \coloneqq K(x, \cdot)$. Soit $H_0$ le sous-espace vectoriel engendré par \\ $\{K_x : x \in X\}$. Sous couvert d'existence de $H$, la reproducing property de $K$ nous assure que $\forall x, y \in X, \; K(x, y) = \langle K_x, K_y \rangle_H$. On a de même :
+		\[\left\langle \sum_{i=1}^{n} a_i K_{x_i}, \sum_{j=1}^{m} b_j K_{x_j} \right\rangle_H = \sum_{i=1}^{n} \sum_{j=1}^{m} a_i b_j K(x_i, x_j)\]
+		
+		Il est alors naturel de définir pour toutes fonctions de $H_0$ : $f \coloneqq \sum_{i=1}^n a_i K_{x_i}$ et $g \coloneqq \sum_{j=1}^m b_i K_{y_j}$ 
+		\[\langle f, g \rangle_{H_0} \coloneqq \sum_{i=1}^{n} \sum_{j=1}^{m} a_i b_j K(x_i, x_j) = \sum_{i=1}^n a_i g(x_i) = \sum_{j=1}^m b_j f(y_j)\]
+		
+		Déjà, $K_x \in H_0$, et comme $f(x) = \langle f, K_x \rangle_{H_0} < \infty$, $\langle \cdot, \cdot \rangle_{H_0}$ est bien défini, billinéaire, est symétrique et positif, et on a la reproducing property :
+		
+		\[\forall x \in X, \; f \in H_0, \; \langle f, K_x \rangle_{H_0} = \sum_{i=1}^n a_i K_x(x_i) = \sum_{i=1}^n a_i K_{x_i}(x) = f(x)\]
+		
+		Il reste à montrer que $||f||_{H_0} = 0 \Rightarrow f = 0$ pour que ca soit un produit scalaire :
+		
+		\[|f(x)| = |\langle f, K_x \rangle_{H_0}| \leq ||f||_{H_0} ||K_x||_{H_0} = ||f||_{H_0} \sqrt{K(x,x)} \]
+		
+		Donc $\langle \cdot, \cdot \rangle_{H_0}$ est un produit scalaire. \\
+		
+		On complète $H_0$ avec le produit scalaire $\langle \cdot, \cdot \rangle_{H_0}$ en $H$, et toutes les propriétés sont gardées. \\
+		
+		Unicité : Supposons $G$ un autre espace de Hilbert pour lequel $K$ est un noyau reproduisant. On a alors  
+		\[\forall x, y \in X, \; \langle K_x, K_y \rangle_H = K(x, y) = \langle K_x, K_y \rangle_G\]
+		
+		Par linéarité, $\langle \cdot, \cdot \rangle_H = \langle \cdot, \cdot \rangle_G$ sur tout $H_0$. {\bf FINIR PREUVE UNICITE}
+	\end{proof}
+	
+	Tout compte fait, on a montré que :
+	\[H \text{ est un RKHS} \Leftrightarrow \exists ! \; k \text{ noyau reproduisant de $H$} \Leftrightarrow k \text{ est un noyau}\]
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	\section{Introduction : Réseau de neurone simple}
 	
@@ -273,6 +428,7 @@
 	
 		
 	\end{itemize}
+
 
 	
 	
