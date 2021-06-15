@@ -35,7 +35,9 @@
 	\tableofcontents
 	\newpage
 	
-	\section{Reproducing Kernel Hilbert space (RKHS)}
+	\section{Reproducing Kernel Hilbert space (RKHS) et leurs applications}
+	
+	\subsection{Cadre théorique}
 	
 	Nous allons dans cette section s'intéresser aux RKHS, des espaces de Hilbert réels qui satisfont certaines propriétés, et qui ont des applications intéressantes en machine learning. Par exemple, on montrera un théorème qui nous permet de simplifier un problème de minimisation de risque empirique de dimension infini à un problème en dimension fini. Ou encore des applications dans plusieurs algorithmes de ML, les transformant d'algorithmes linéaires à non-linéaires à très faible prix, et d'autres encore. \\
 	
@@ -77,7 +79,7 @@
 	\end{proof}
 
 	\begin{definition}[Noyau reproduisant / Reproducing kernel]
-		Une fonction $k : X \times X \to \mathbb{R}$ est un noyau reproduisant de H si $\forall x \in X, \, f \in H$ :
+		Une fonction $k : X \times X \to \mathbb{R}$ est un noyau reproduisant de $H$ si $\forall x \in X, \, f \in H$ :
 		\begin{itemize}
 			\item[$\bullet$] $k(\cdot, x) \in H$			
 			\item[$\bullet$] $f(x) = \langle f, k(\cdot, x) \rangle_H$
@@ -159,24 +161,123 @@
 		
 		On complète $H_0$ avec le produit scalaire $\langle \cdot, \cdot \rangle_{H_0}$ en $H$, et toutes les propriétés sont gardées. \\
 		
-		Unicité : Supposons $G$ un autre espace de Hilbert pour lequel $K$ est un noyau reproduisant. On a alors  
-		\[\forall x, y \in X, \; \langle K_x, K_y \rangle_H = K(x, y) = \langle K_x, K_y \rangle_G\]
-		
-		Par linéarité, $\langle \cdot, \cdot \rangle_H = \langle \cdot, \cdot \rangle_G$ sur tout $H_0$. {\bf FINIR PREUVE UNICITE}
+		Unicité : supposons $G$ un autre espace de Hilbert pour lequel $K$ est un noyau reproduisant. 
+		\begin{itemize}
+			\item[$\bullet$]
+			$(\subseteq)$ : \\
+			On a
+			\[\forall x, y \in X, \; \langle K_x, K_y \rangle_H = K(x, y) = \langle K_x, K_y \rangle_G\]
+			Par linéarité, $\langle \cdot, \cdot \rangle_H = \langle \cdot, \cdot \rangle_G$ sur tout $H_0$, i.e $H_0 \subseteq G$. Donc $H \subseteq G$ car $G$ est complet.
+			
+			\item[$\bullet$]
+			$(\supseteq)$ : \\
+			Soit $f \in G$. Comme $H$ est un sous-espace fermé de $G$, on peut écrire $f = f_{H} + f_{H^\perp}$ par le théorème de décomposition orthogonal. De plus comme $K$ est un noyau reproductif de $G$ et $H$ on a $\forall x \in X$ :
+			
+			\[f(x) = \langle K_x, f \rangle_G = \langle K_x, f_{H} \rangle_G + \langle K_x, f_{H^\perp} \rangle_G = \langle K_x, f_{H} \rangle_G = \langle K_x, f_{H} \rangle_H = f_H (x) \]
+			
+			Ainsi $f \in H$.
+		\end{itemize}	
 	\end{proof}
 	
 	Tout compte fait, on a montré que :
 	\[H \text{ est un RKHS} \Leftrightarrow \exists ! \; k \text{ noyau reproduisant de $H$} \Leftrightarrow k \text{ est un noyau}\]
 	
+	Regardons quelques kernels classiques :
+	\begin{itemize}
+		\item[$\bullet$] $k(x, y) \coloneqq \langle x, y \rangle$, son RKHS est $H = \{\langle \cdot, \beta \rangle : ||\langle \cdot, \beta \rangle||_H^2 = ||\beta||^2\}$
+		\item[$\bullet$] $k(x, y) \coloneqq (\alpha \langle x, y \rangle + 1)^d, \; \alpha \in \mathbb{R}, \; d \in \mathbb{N}$
+		\item[$\bullet$] $k(x, y) \coloneqq \exp(||x-y||^2 / (2\sigma^2)), \; \sigma > 0$
+		\item[$\bullet$] $k(x, y) \coloneqq \exp(||x-y|| / \sigma), \; \sigma > 0$
+		\item[$\bullet$] $k(x, y) \coloneqq \sin (a(x-y)) / \pi (x-y)$, son RKHS correspond aux fonctions de $L^2(\mathbb{R})$ dont la transformée de fourier est à support dans $[-a, a]$.
+	\end{itemize}
 	
+	\subsection{Applications des RKHS en machine learning}
 	
+	Une application très importante des RKHS est le Representer theorem, un théorème qui permet de transformer des problèmes d'optimisation de dimension infinie en dimension finie, qu'on pourra alors résoudre avec les méthodes d'optimisation numérique. On verra son application avec le Kernel Ridge Regression et avec les SVM.
 	
+	\subsubsection{Representer theorem}
 	
+	\begin{theorem}[Representer theorem]
+		Soit $k$ un kernel sur $X$ et soit $H$ sa RKHS associée. Posons $x_1, \cdots, x_n \in X$ notre training sample. Regardons le problème d'optimisation suivant :
+		
+		\[\min_{f \in H} \; J(f) \coloneqq E(f(x_1), \cdots, f(x_n)) + P(||f||_H^2)\]
+		Où $P$ est une fonction croissante. \\
+		
+		Alors si ce problème d'optimisation a (au-moins) une solution, il y a (au-moins) une solution de la forme \[f = \sum_{i=1}^{n} \alpha_i \cdot k(\cdot, x_i)\].
+		
+		De plus, si $P$ est strictement croissante, alors toute solution a cette forme.
+	\end{theorem}
+	\begin{proof}
+		Soit $H_0$ le sous espace engendré par $\{k(\cdot, x_i ) : i \in 1, \cdots, n\}$. Comme $H_0 \in H$, $H_0$ est fermé car de dimension finie. Alors le théorème de décomposition orthogonale nous dit que : $\forall f \in H, \; f = f_{H_0} + f_{{H_0}^\perp}$. \\
+		
+		De plus, comme $k$ est un noyau reproductif de $H$, on a $\forall x_i$ :
+		
+		\[f(x_i) = \langle k(\cdot, x_i), f \rangle_H = \langle k(\cdot, x_i), f_{H_0} \rangle_H + \langle k(\cdot, x_i), f_{{H_0}^\perp} \rangle_H = \langle k(\cdot, x_i), f_{H_0} \rangle_H = f_{H_0} (x_i) \]
+		
+		Alors :
+		
+		\begin{align*}
+			J(f) &\coloneqq E(f(x_1), \cdots, f(x_n)) + P(||f||_H^2) \\
+			&= E(f_{H_0}(x_1), \cdots, f_{H_0}(x_n)) + P(||f||_H^2) \\
+			&\geq E(f_{H_0}(x_1), \cdots, f_{H_0}(x_n)) + P(||f_{H_0}||_H^2) \text{ par croissance de $P$ car $||f||_H^2 = ||f_{H_0}||_H^2 + ||f_{{H_0}^\perp}||_H^2$}\\
+			&= J(f_{H_0})
+		\end{align*}
 	
+		Donc si $f$ est un minimiseur de $J$, alors $f_{H_0} \coloneqq \sum_{i=1}^{n} \alpha_i \cdot k(\cdot, x_i)$ aussi. Si $P$ est strictement croissante, alors l'inégalité est stricte et si l'on veut un minimiseur de $J$ il faut nécessairement qu'il soit de cette forme.
+	\end{proof}
+
+	\subsubsection{Exemple 1 : Kernel Ridge Regression}
 	
+	Ici, $J(f) \coloneqq \sum_{i=1}^{n} (y_i - f(x_i))^2 + \lambda ||f||_H^2$, prenons $k$ un kernel sur $X$. Le representer theorem nous dit que la solution de ce problème (sous couvert d'existence) est nécessairement de la forme 
+	\[f = \sum_{i=1}^{n} \alpha_i \cdot k(\cdot, x_i)\]
+	Rappelons que :
 	
+	\[||f||_H^2 = \left\langle \sum_{i=1}^{n} a_i k(\cdot, x_i), \sum_{j=1}^{n} a_j k(\cdot, x_j) \right\rangle_H = \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j K(x_i, x_j)\]
 	
+	Le problème d'optimisation \[\min_{f \in H} \; J(f) \coloneqq \sum_{i=1}^{n} (y_i - f(x_i))^2 + \lambda ||f||_H^2\]
 	
+	est alors équivalent à 
+	
+	\[\min_{\alpha \in \mathbb{R}^n} \; \sum_{i=1}^{n} (y_i - \sum_{j=1}^{n} \alpha_j \cdot k(x_i, x_j))^2 + \lambda \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j K(x_i, x_j)\]
+	
+	ou encore avec $(K)_{ij} = k(x_i, x_j)$ (qui est symétrique)
+	
+	\[\min_{\alpha \in \mathbb{R}^n} \; F(\alpha) \coloneqq ||y - K \alpha||_2^2 + \lambda \alpha^T K \alpha\]
+	
+	Reste à résoudre ce problème de la même manière qu'une régression ridge simple :
+	
+	\[\nabla_{\alpha} F(\alpha) = -2 K (y - K \alpha) + 2\lambda K \alpha\]
+	
+	\[\nabla_{\alpha} F(\alpha) = 0 \Leftrightarrow \alpha = (K + \lambda Id_n)^{-1} y\]
+	
+	Notre prédicteur sera ainsi
+	
+	\[f = \sum_{i=1}^{n} ((K + \lambda Id_n)^{-1} y)_i \cdot k(\cdot, x_i)\]
+	
+	Ce qui est mieux par rapport à la régression pénalisée, c'est que notre prédicteur est une fonction non-linéaire de $x$, nous permettant d'aller chercher dans la classe des fonctions de la RKHS associée à $k$ (et donc potentiellement avoir de meilleures prédictions).
+	
+	\subsubsection{Exemple 2 : Support Vector Machine (SVM)}	
+	
+	Dans le cadre d'une SVM, $J(f) \coloneqq \frac{1}{n} \sum_{i=1}^{n} max(0, 1 - y_i f(x_i)) + \frac{\lambda}{2} ||f||_H^2$. Prenons encore une fois un kernel $k$ sur $X$. Encore une fois, le representer theorem nous dit que la seule solution (si elle existe) est sous la forme
+	\[f = \sum_{i=1}^{n} \alpha_i \cdot k(\cdot, x_i)\]
+	
+	On cherche alors à résoudre le problème suivant :
+	\[\min_{\alpha \in \mathbb{R}^n} \; \sum_{i=1}^{n} max(0, 1 - y_i \sum_{j=1}^{n} \alpha_j \cdot k(x_i, x_j))  + \frac{\lambda}{2} \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j K(x_i, x_j)\]
+	
+	 On peut montrer que le dual de ce problème est :
+	\[\min_{\gamma \in \mathbb{R}^n} \; -\sum_{i=1}^{n} \gamma_i + \frac{1}{2} \sum_{i=1}^{n} \sum_{j=1}^{n} \gamma_i \gamma_j y_i y_j k(x_i, x_j) \text{ t.q } 0 \leq \gamma_i \leq \frac{1}{n \lambda} \; \forall i \in \{1, \cdots, n\}\]
+	
+	avec $\alpha_i = y_i \gamma_i \; \forall i \in \{1, \cdots, n\}$. On trouve la la solution du dual par des algorithmes d'optimisation quadratique. \\
+	
+	Le prédicteur est donc :
+	
+	\[f = \sum_{i=1}^{n} y_i \gamma_i \cdot k(\cdot, x_i)\]
+	
+	On a remplacé l'estimateur linéaire de la SVM par un estimateur non-linéaire de $x$, sans changer la complexité de l'algorithme.
+	
+	\subsubsection{Le Kernel Trick}
+	
+	Plus généralement, à tout algorithme qui utilise des produits scalaires, on peut les remplacer par un kernel. Ainsi on peut transformer rendre non-linéaires les algorithmes, en manipulant des vecteurs de dimensions infinie sans que cela pose problème, comme leur produit scalaire est égal au kernel. C'est ce qu'on appelle le "kernel trick", et il a une très grande importance dans les applications pratiques. Par exemple, ce que l'on a fait plus haut avec peut aussi être fait avec le kernel trick dans la preuve de la construction de la solution linéaire en remplacant $\langle \cdot, \cdot \rangle$ par $\langle \phi(\cdot), \phi(\cdot) \rangle = k(\cdot, \cdot)$.
 	
 	
 	
