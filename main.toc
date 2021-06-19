@@ -1,16 +1,15 @@
 \babel@toc {french}{}
-\contentsline {section}{\numberline {1}Reproducing Kernel Hilbert space (RKHS) et leurs applications}{3}{}%
-\contentsline {subsection}{\numberline {1.1}Cadre théorique}{3}{}%
-\contentsline {subsection}{\numberline {1.2}Applications des RKHS en machine learning}{5}{}%
-\contentsline {subsubsection}{\numberline {1.2.1}Representer theorem}{6}{}%
-\contentsline {subsubsection}{\numberline {1.2.2}Exemple 1 : Kernel Ridge Regression}{6}{}%
-\contentsline {subsubsection}{\numberline {1.2.3}Exemple 2 : Support Vector Machine (SVM)}{7}{}%
-\contentsline {subsubsection}{\numberline {1.2.4}Le Kernel Trick}{8}{}%
-\contentsline {section}{\numberline {2}Introduction : Réseau de neurone simple}{8}{}%
-\contentsline {subsection}{\numberline {2.1}Lois suivant la largeur des couches $m$}{8}{}%
-\contentsline {subsection}{\numberline {2.2}Choix de $\gamma $}{10}{}%
-\contentsline {subsection}{\numberline {2.3}Gradients}{10}{}%
-\contentsline {subsection}{\numberline {2.4}Descente de gradient}{10}{}%
-\contentsline {subsubsection}{\numberline {2.4.1}Choix de $\eta $}{11}{}%
-\contentsline {subsubsection}{\numberline {2.4.2}Ordres de grandeur des écarts relatifs}{11}{}%
-\contentsline {subsubsection}{\numberline {2.4.3}Choix de $\alpha $}{12}{}%
+\contentsline {section}{\numberline {1}Reproducing Kernel Hilbert space (RKHS) et leurs applications}{3}%
+\contentsline {subsection}{\numberline {1.1}Cadre théorique}{3}%
+\contentsline {subsection}{\numberline {1.2}Applications des RKHS en machine learning}{6}%
+\contentsline {subsubsection}{\numberline {1.2.1}Representer theorem}{6}%
+\contentsline {subsubsection}{\numberline {1.2.2}Exemple 1 : Kernel Ridge Regression}{6}%
+\contentsline {subsubsection}{\numberline {1.2.3}Exemple 2 : Support Vector Machine (SVM)}{7}%
+\contentsline {subsubsection}{\numberline {1.2.4}Le Kernel Trick}{8}%
+\contentsline {section}{\numberline {2}Introduction : Réseau de neurone simple}{8}%
+\contentsline {subsection}{\numberline {2.1}Lois suivant la largeur des couches $m$}{8}%
+\contentsline {subsection}{\numberline {2.2}Gradients}{9}%
+\contentsline {subsection}{\numberline {2.3}Descente de gradient}{10}%
+\contentsline {subsubsection}{\numberline {2.3.1}Choix de $\eta $}{10}%
+\contentsline {subsubsection}{\numberline {2.3.2}Ordres de grandeur des écarts relatifs}{10}%
+\contentsline {subsubsection}{\numberline {2.3.3}Choix de $\alpha $}{11}%
