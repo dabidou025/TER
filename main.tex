@@ -23,6 +23,15 @@
 
 \renewcommand\qedsymbol{$\blacksquare$}
 
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
 
 \title{TER M1 : \\ NN and RKHS}
 \author{Matthieu Denis}
@@ -201,7 +210,7 @@
 	\subsubsection{Representer theorem}
 	
 	\begin{theorem}[Representer theorem]
-		Soit $k$ un kernel sur $X$ et soit $H$ sa RKHS associée. Posons $x_1, \cdots, x_n \in X$ notre training sample. Regardons le problème d'optimisation suivant :
+		Soit $k$ un kernel sur $X$ et soit $H$ son RKHS associée. Posons $x_1, \cdots, x_n \in X$ notre training sample. Regardons le problème d'optimisation suivant :
 		
 		\[\min_{f \in H} \; J(f) \coloneqq E(f(x_1), \cdots, f(x_n)) + P(||f||_H^2)\]
 		Où $P$ est une fonction croissante. \\
@@ -261,7 +270,7 @@
 	
 	\subsubsection{Exemple 2 : Support Vector Machine (SVM)}	
 	
-	Dans le cadre d'une SVM, $J(f) \coloneqq \frac{1}{n} \sum_{i=1}^{n} max(0, 1 - y_i f(x_i)) + \frac{\lambda}{2} ||f||_H^2$. Prenons encore une fois un kernel $k$ sur $X$. Encore une fois, le representer theorem nous dit que la seule solution (si elle existe) est sous la forme
+	Dans le cadre d'une SVM, $J(f) \coloneqq \frac{1}{n} \sum_{i=1}^{n} max(0, 1 - y_i f(x_i)) + \frac{\lambda}{2} ||f||_H^2$. Prenons un kernel $k$ sur $X$. Encore une fois, le representer theorem nous dit que la seule solution (si elle existe) est sous la forme
 	\[f = \sum_{i=1}^{n} \alpha_i \cdot k(\cdot, x_i)\]
 	
 	On cherche alors à résoudre le problème suivant :
@@ -512,17 +521,144 @@
 
 	\[||\Delta \nabla_{\beta / u / A} F(\Phi) || = \mathcal{O}(m^{-1/2}) \stackrel{\alpha < 1}{\ll} m^{1/2 - \alpha} \sim ||\nabla_{\beta / u / A} F(\Phi)||\]
 
-	ce qu'il faut discuter, c'est la chose suivante: on voit qu'apr\`es une \'etape de descente de gradient, $\Delta F\asymp 1$ mais les variations relatives des param\`etres et gradients tendent vers 0. Donc \`a l'\'etape suivante, les \'evaluations pr\'ec\'edentes restent valables et le m\^eme ph\'enom\`ene se reproduira. In fine, apr\`es un nombre fini d'\'etape de gradient, on aura toujours $F(\Phi(\theta^t, x)) = F(\Phi(\theta^0, x)) + \langle \theta^t-\theta^0 , \nabla_{\theta} F(\Phi(\theta^0, x))  \rangle  +O(m^{-1/2})$. Cela signifie donc qu'on apprend un mod\`ele lin\'eaire relatif aux features $\nabla_{\theta} F(\Phi(\theta^0, x))$. Autrement dit on fait un apprentissage dans un RKHS de noyau
-	$$k(x,y)=\langle\nabla_{\theta} F(\Phi(\theta^0, x)),\nabla_{\theta} F(\Phi(\theta^0, y))\rangle \stackrel{LGN}{=} \mathbb{E}[\langle\nabla_{\theta} F(\Phi(\theta^0, x)),\nabla_{\theta} F(\Phi(\theta^0, y))\rangle].$$
-	En particulier, le noyau ne d\'epend que de l'architecture du r\'eseau de neurones et de l'initialisation, pas des donn\'ees (no feature learning).
+	Ainsi, lorsqu'on fait un pas de gradient, la variation du gradient est quasiment nulle. On utilise alors à l'approximation $\nabla_{\beta / u / A} F(\Phi(\theta^1,x)) \simeq \nabla_{\beta / u / A} F(\Phi(\theta^0,x))$. On peut alors réutiliser les calculs pour l'étape suivante et ainsi de suite. On finit donc par avoir l'approximation $\nabla_{\beta / u / A} F(\Phi(\theta^t,x)) \simeq \nabla_{\beta / u / A} F(\Phi(\theta^0,x))$ après $t$ pas de gradient.
 	
-	Tu peux aussi mettre a remarque que pour $\alpha=1$ cela n'est plus vrai, il y a bien feature learning.
+	\begin{align*}
+		F(\Phi(\theta^{t+1}, x)) - F(\Phi(\theta^t, x))&= \langle \theta^{t+1}-\theta^t , \nabla_{\theta} F(\Phi(\theta^t, x))  \rangle  + \mathcal{O}(m^{-1/2}) \\
+		\Longrightarrow \sum_{t=0}^{T-1} F(\Phi(\theta^{t+1}, x)) - F(\Phi(\theta^t, x)) &= \sum_{t=0}^{T-1} \langle \theta^{t+1}-\theta^t , \nabla_{\theta} F(\Phi(\theta^t, x))  \rangle  + \mathcal{O}(m^{-1/2}) \\
+		\Longleftrightarrow F(\Phi(\theta^{T}, x)) - F(\Phi(\theta^{0}, x)) &= \sum_{t=0}^{T-1} \langle \theta^{t+1}-\theta^t , \nabla_{\theta} F(\Phi(\theta^0, x))  \rangle  + \mathcal{O}(m^{-1/2}) \\
+		\Longleftrightarrow	F(\Phi(\theta^{T}, x)) &= F(\Phi(\theta^{0}, x)) + \langle \theta^{T}-\theta^0 , \nabla_{\theta} F(\Phi(\theta^0, x))  \rangle  + \mathcal{O}(m^{-1/2})
+	\end{align*}
+
+	On apprend donc un modèle linéaire relatif aux features $\nabla_{\theta} F(\Phi(\theta^0, x))$, c'est-à-dire qu'après la transformation $x \rightarrow \nabla_{\theta} F(\Phi(\theta^0, x))$, on est linéaire. On fait donc face à un RKHS de noyau (par définition) $$k(x,y)=\langle\nabla_{\theta} F(\Phi(\theta^0, x)),\nabla_{\theta} F(\Phi(\theta^0, y))\rangle \stackrel{LGN}{\longrightarrow} \mathbb{E}[\langle\nabla_{\theta} F(\Phi(\theta^0, x)),\nabla_{\theta} F(\Phi(\theta^0, y))\rangle] \; \forall x,y \in \mathbb{R}$$
+	
+	Le noyau dépend seulement de l'architecture du NN et de l'initialisation, il n'y a donc pas de feature learning. \\
+	
+	\item[$\bullet$] $\alpha = 1$ \\
+
+	Dans ce cas là, comme vu plus haut, les variations relatives des paramètres ne sont plus négligeable pour $m$ grand, et on observe plus de RKHS, il y a bien feature learning.
+	
 	
 	Ici on a fait le calcul dans le cas le plus simple possible pour voir apparaitre le ph\'enom\`ene. Dans la suite on va: voir que le calcul reste valable pour $\sigma(x)\neq x$ et $x\in R^d$. Puis on d\'erivera proprement le r\'esultat. 
 		
 	\end{itemize}
 
+	\section{Suite}
+	
+	Soit $\phi : \mathbb{R} \to \mathbb{R}$ et $g(u) \coloneqq \frac{1}{m} \sum_{j=1}^{m} \phi(u_j)$. On suppose l'initialisation gaussienne : $u_j^0 \sim_{iid} N(0,1)$.\\
+	Etudions le comportement de $f(u) \coloneqq \sqrt{m} g(u)$ autour de $u_j^0$ pour $m$ grand.
+	
+	\[\frac{\partial g(u)}{\partial u_j} = \frac{1}{m} \phi '(u_j)\]
+	
+	\begin{align}
+		||\nabla g(u) ||^2 &= \frac{1}{m^2} \sum_{j=1}^{m} (\phi '(u_j))^2 \\
+		&\simeq \frac{1}{m} \mathbb{E}((\phi '(u_j))^2) \text{ pour $m$ grand par la LGN}
+	\end{align}
 
+	$||D^2 g(u)||_{op} = \sup \{||D^2 g(u) \, x|| \text{ avec } ||x|| = 1\}$
+	
+	\begin{align}
+		(D^2 g(u) \, x)_i &= \sum_{j=1}^{m} (D^2 g(u) \, x)_{ij} \, x_j \\
+		&= \sum_{j=1}^{m} \frac{\partial g(u)}{\partial u_i \partial u_j} \, x_j \\
+		&= \frac{1}{m} \phi ''(u_i) \, x_i \text{ car la dérivée seconde est nulle si $i \neq j$}
+	\end{align}
+	
+	Donc
+	
+	\begin{align*}
+		||D^2 g(u) \, x||^2 &= \frac{1}{m^2} \sum_{j=1}^{m} x_i^2 (\phi ''(u_i))^2 \\
+		&\leq \frac{1}{m^2} \sup_i (\phi ''(u_i))^2 \sum_{j=1}^{m} x_i^2 \\
+		&= \frac{1}{m^2} \sup_i (\phi ''(u_i))^2 \text{ car $||x|| = 1$} \\
+		&= \frac{1}{m^2} (\sup_i |\phi ''(u_i)|)^2 \\
+		&= \frac{1}{m^2} (|\phi ''|_{\infty})^2
+	\end{align*}
+	
+	Ainsi, \[||D^2 g(u) \, x||_{op} = \frac{|\phi ''|_{\infty}}{m}\]
+	
+	
+	
+	
+
+
+
+
+	Maintenant, considérons $\phi : \mathbb{R}^d \to \mathbb{R}^n$ \\
+	
+	\begin{property}
+		Pour toute matrice réelle $A$, $||A||_{op}^2 = ||A^T A||_{op}$, et $||A||_{op} = ||A^T||_{op}$.
+	\end{property}
+	\begin{proof}
+		Soit $v$ le vecteur pour lequel le suprémum est atteint dans la définition de $||A||_{op}$ :
+		\begin{align*}
+			||A||_{op}^2 = ||Av||^2 &= \langle Av, Av \rangle \\
+			&= \langle A^T Av, v \rangle \\
+			&\leq ||A^T Av|| \cdot ||v|| \text{ par CS}\\
+			&= ||A^T A||_{op} \cdot ||v|| \text{ par définition de $||\cdot||_{op}$ et car $||v|| = 1$}\\
+			&= ||A^T A||_{op} \\
+			&\leq ||A^T||_{op} ||A||_{op} \text{ car $||\cdot||_{op}$ est sous-multiplicative}
+		\end{align*}
+		
+		Alors $||A||_{op} \leq ||A^T||_{op}$. En substituant $A^T$ à $A$, on a aussi $||A^T||_{op} \leq ||A||_{op}$ et donc $||A^T||_{op} ||A||_{op} \leq ||A||_{op}^2$. On a encadré $||A^T A||_{op}$ par $||A||_{op}^2$ ce qui conclue la preuve.
+	
+	\end{proof}
+
+	En appliquant cette propriété, $||Dg(u)||_{op} = ||Dg(u)Dg(u)^T||_{op}^{1/2}$.
+	
+	\begin{align*}
+		Dg(u) &=
+		\begin{bmatrix}
+			D_{u_1}g(u) & \cdots & D_{u_m}g(u)
+		\end{bmatrix} \in \mathbb{R}^{n \times (d\cdot m)}\\
+		&= \frac{1}{m} \begin{bmatrix}
+			D \phi(u_1) & \cdots & D \phi(u_m)
+		\end{bmatrix}
+	\end{align*}
+
+	\[ 
+	Dg(u) Dg(u)^T =
+	\begin{bmatrix}
+		D_{u_1}g(u) & \cdots & D_{u_m}g(u)
+	\end{bmatrix}
+	\begin{bmatrix}
+		D_{u_1}g(u)^T \\
+		 \vdots \\
+		  D_{u_m}g(u)^T
+	\end{bmatrix}
+	= \frac{1}{m^2} \sum_{j=1}^{m} D \phi(u_j) D \phi(u_m)^T
+	\]
+	
+	Asymptotiquement en le nombre $m$ de couche, on a par la LGN :
+	
+	\[Dg(u^0) Dg(u^0)^T \simeq \frac{1}{m} \mathbb{E}(D \phi(u^0_j) D \phi(u^0_j)^T)\]
+	
+	Par continuité, on a pour $m$ grand :
+	
+	\[||Dg(u^0) Dg(u^0)^T||_{op} \simeq \frac{1}{\sqrt{m}} ||\mathbb{E}(D \phi(u^0_j) D \phi(u^0_j)^T)||_{op}^{1/2}\]
+	
+	
+	\subsubsection{Dérivées secondes}
+	
+	\paragraph{Cas $n = 1$}
+	
+	\[\frac{\partial^2 g(u)}{\partial u_{jk} \partial u_{j'k'}} = \frac{1}{m} \frac{\partial^2 \phi (u_j)}{\partial u_{jk} \partial u_{j'k'}} {\bf 1}_{j = j'} \]
+	
+	$D^2 g(u)$ est de dimension $(d\cdot m) \times (d\cdot m)$, et est une matrice diagonale par blocs de dimension $d\cdot d$, dont la diagonale est composée des $\frac{1}{m} D^2 \phi (u_j)$.
+	
+	{\bf BLABLA PROUVER 1ER EGALITE}
+	
+	Or
+	
+	\begin{align*}
+		\sup_{||v|| \leq 1} \; v^T D^2 \phi (u_j) &= \langle D^2 \phi (u_j) v, v \rangle \text{ avec le $v$ réalisant le $\sup$ }\\
+		&\leq ||D^2 \phi (u_j) v|| \cdot ||v|| \text{ par CS}\\
+		&\leq ||D^2 \phi (u_j)||_{op} \cdot ||v|| \text{ par définition de $||\cdot||_{op}$ et car $||v|| \leq 1$} \\
+		&\leq ||D^2 \phi (u_j)||_{op}
+	\end{align*}
+	
+	Ainsi 
+	\[\frac{1}{m} \; \max_{j=1,\cdots,m} \; \sup_{||v|| \leq 1} \; v^T D^2 \phi (u_j) \leq \frac{1}{m} \; \max_{j=1,\cdots,m} ||D^2 \phi (u_j)||_{op} = \frac{1}{m} \; \sup_{u_j} ||D^2 \phi (u_j)||_{op}\]
+	
+	D'où $D^2 g(u) \leq \frac{1}{m} \; \sup_{u_j} ||D^2 \phi (u_j)||_{op}$
 	
 	
 \end{document}
