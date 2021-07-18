@@ -13,6 +13,13 @@
 \contentsline {subsubsection}{\numberline {2.3.1}Choix de $\eta $}{10}{}%
 \contentsline {subsubsection}{\numberline {2.3.2}Ordres de grandeur des écarts relatifs}{10}{}%
 \contentsline {subsubsection}{\numberline {2.3.3}Choix de $\alpha $}{11}{}%
-\contentsline {section}{\numberline {3}Suite}{13}{}%
-\contentsline {subsubsection}{\numberline {3.0.1}Dérivées secondes}{15}{}%
-\contentsline {paragraph}{\numberline {3.0.1.1}Cas $n = 1$}{15}{}%
+\contentsline {section}{\numberline {3}Généralisation à un cas particulier}{13}{}%
+\contentsline {subsection}{\numberline {3.1}Objectif}{13}{}%
+\contentsline {subsection}{\numberline {3.2}Cas simple}{13}{}%
+\contentsline {subsection}{\numberline {3.3}Cas général}{15}{}%
+\contentsline {subsubsection}{\numberline {3.3.1}Dérivées premières}{15}{}%
+\contentsline {subsubsection}{\numberline {3.3.2}Dérivées secondes}{16}{}%
+\contentsline {subsection}{\numberline {3.4}Application}{17}{}%
+\contentsline {section}{\numberline {4}Résultats récents}{18}{}%
+\contentsline {subsection}{\numberline {4.1}Cadre}{18}{}%
+\contentsline {subsection}{\numberline {4.2}Bornes à horizon fini}{18}{}%

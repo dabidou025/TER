@@ -27,11 +27,14 @@
 
 \setcounter{secnumdepth}{4}
 
+\setlength{\parindent}{0pt}
+
 \titleformat{\paragraph}
 {\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
 \titlespacing{\paragraph}
 {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
 
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 
 \title{TER M1 : \\ NN and RKHS}
 \author{Matthieu Denis}
@@ -543,9 +546,20 @@
 		
 	\end{itemize}
 
-	\section{Suite}
+	\section{Généralisation à un cas particulier}
 	
-	Soit $\phi : \mathbb{R} \to \mathbb{R}$ et $g(u) \coloneqq \frac{1}{m} \sum_{j=1}^{m} \phi(u_j)$. On suppose l'initialisation gaussienne : $u_j^0 \sim_{iid} N(0,1)$.\\
+	\subsection{Objectif}
+	
+	Dans cette partie, on va étudier ce comportement linéaire autour de l'initialisation pour un cas particulier d'un réseau de neurone à 2 couches :
+	
+	\[ \frac{1}{\sqrt{m}} \sum_{j=1}^{m} a_j \cdot \sigma (\langle {\bf b_j}, x \rangle) \]
+	
+	Où $a_j \in \mathbb{R}$, $x$ et ${\bf b_j} \in \mathbb{R}^d$, et $\sigma : \mathbb{R} \to \mathbb{R}$ une fonction non-linéaire. C'est une moyenne coefficientée renormalisée de la couche cachée. Les $a_j$ et ${\bf b_j}$ seront initialisés gaussiennement. Pour faciliter les calculs, on considèrera $u_j \coloneqq (a_j, {\bf b_j})$ les paramètres de ce NN.
+	
+	\subsection{Cas simple}
+	
+	Soit $\phi : \mathbb{R} \to \mathbb{R}$ et \[g(u) \coloneqq \frac{1}{m} \sum_{j=1}^{m} \phi(u_j)\] On suppose l'initialisation gaussienne : $u_j^0 \sim_{iid} N(0,1)$. \\
+	
 	Etudions le comportement de $f(u) \coloneqq \sqrt{m} g(u)$ autour de $u_j^0$ pour $m$ grand.
 	
 	\[\frac{\partial g(u)}{\partial u_j} = \frac{1}{m} \phi '(u_j)\]
@@ -575,14 +589,23 @@
 	
 	Ainsi, \[||D^2 g(u) \, x||_{op} = \frac{|\phi ''|_{\infty}}{m}\]
 	
+	On peut à présent regarder le comportement pour pour $m$ grand de $f(u) \coloneqq \sqrt m g(u)$. Pour tout $h$, on a :
 	
+	\[f(u^0 + h) = f(u^0) + \sqrt m \left(\langle \nabla g(u), h \rangle + \mathcal{O}\left(\frac{||h||^2}{m}\right) \right) =  f(u^0) + \sqrt m ||\nabla g(u)|| \left \langle \frac{\nabla g(u)}{||\nabla g(u)||}, h \right \rangle  + \mathcal{O}\left(\frac{||h||^2}{\sqrt m}\right) \]
 	
+	\begin{align*}
+		f(u^0 + h) &= f(u^0) + \sqrt m \left(\langle \nabla g(u), h \rangle + \mathcal{O}\left(\frac{||h||^2}{m}\right) \right) \\
+		&= f(u^0) + \sqrt m ||\nabla g(u)|| \left \langle \frac{\nabla g(u)}{||\nabla g(u)||}, h \right \rangle  + \mathcal{O}\left(\frac{||h||^2}{\sqrt m}\right) \\
+		&\stackrel{m \to \infty}{\simeq} f(u^0) + \sqrt{\mathbb{E}((\phi '(u_j))^2)} \left \langle V_u, h \right \rangle  + \mathcal{O}\left(\frac{||h||^2}{\sqrt m}\right) \text{ avec $V_u \coloneqq \frac{\nabla g(u)}{||\nabla g(u)||}$ de norme 1.}
+	\end{align*}
 	
-
-
-
-
-	Maintenant, considérons $\phi : \mathbb{R}^d \to \mathbb{R}^n$ \\
+	On voit donc que notre réseau de neurone se comporte encore une fois linéairement pour $m$ grand. \\
+	
+	\subsection{Cas général}
+	
+	Maintenant, considérons $\phi : \mathbb{R}^d \to \mathbb{R}$. On aura besoin de la propriété suivante, qui nous permettra d'approximer pour $m$ grand la norme opérateur de $D g(u)$ par une espérance.
+	
+	\subsubsection{Dérivées premières}
 	
 	\begin{property}
 		Pour toute matrice réelle $A$, $||A||_{op}^2 = ||A^T A||_{op}$, et $||A||_{op} = ||A^T||_{op}$.
@@ -599,7 +622,6 @@
 		\end{align*}
 		
 		Alors $||A||_{op} \leq ||A^T||_{op}$. En substituant $A^T$ à $A$, on a aussi $||A^T||_{op} \leq ||A||_{op}$ et donc $||A^T||_{op} ||A||_{op} \leq ||A||_{op}^2$. On a encadré $||A^T A||_{op}$ par $||A||_{op}^2$ ce qui conclue la preuve.
-	
 	\end{proof}
 
 	En appliquant cette propriété, $||Dg(u)||_{op} = ||Dg(u)Dg(u)^T||_{op}^{1/2}$.
@@ -635,30 +657,147 @@
 	
 	\[||Dg(u^0) Dg(u^0)^T||_{op} \simeq \frac{1}{\sqrt{m}} ||\mathbb{E}(D \phi(u^0_j) D \phi(u^0_j)^T)||_{op}^{1/2}\]
 	
-	
 	\subsubsection{Dérivées secondes}
-	
-	\paragraph{Cas $n = 1$}
 	
 	\[\frac{\partial^2 g(u)}{\partial u_{jk} \partial u_{j'k'}} = \frac{1}{m} \frac{\partial^2 \phi (u_j)}{\partial u_{jk} \partial u_{j'k'}} {\bf 1}_{j = j'} \]
 	
-	$D^2 g(u)$ est de dimension $(d\cdot m) \times (d\cdot m)$, et est une matrice diagonale par blocs de dimension $d\cdot d$, dont la diagonale est composée des $\frac{1}{m} D^2 \phi (u_j)$.
+	$D^2 g(u)$ est de dimension $(d\cdot m) \times (d\cdot m)$, et est une matrice diagonale par blocs de dimension $d\cdot d$, dont la diagonale est composée des $\frac{1}{m} D^2 \phi (u_j)$. \\
+
+	\begin{property}
+		Pour toute matrice réelle symétrique, $||A||_{op} = \sup_{||x|| \leq 1} |x^T A x|$
+	\end{property}
+	\begin{proof}
+		En diagonalisant $A$ en $QDQ^T$ :
+		\begin{itemize}
+			\item[$\bullet$]
+			\begin{align*}
+				\sup_{||x|| \leq 1} |x^T A x| &= \sup_{||x|| \leq 1} |x^T QDQ^T x| \\
+				&= \sup_{||y|| \leq 1} |y^T Dy| \text{ en posant $y \coloneqq Q^T x$ car $Q$ est orthogonale.}  \\
+				&= \sup_{||y|| \leq 1} \left | \sum_{k} y_k^2 \lambda_k \right | \\
+				&= |\lambda_{min}| \lor |\lambda_{max}| \text{ en mettant tout le poids sur la valeur propre la plus extrême.}
+			\end{align*}
+			
+			\item[$\bullet$]
+			\begin{align*}
+				||A||_{op}^2 &\coloneqq \sup_{||x|| \leq 1} ||Ax||_2^2 \\
+				&= \sup_{||x|| \leq 1} x^T A^T A x \\
+				&= \sup_{||y|| \leq 1} y^T D^2 y \\
+				&= \sup_{||y|| \leq 1} \left | \sum_{k} y_k^2 \lambda_k^2 \right | \\
+				&= (\lambda_{min})^2 \lor (\lambda_{max})^2 \text{ par le même argument que ci-dessus}
+			\end{align*}
+			
+			En prenant la racine carrée, on retrouve bien le résultat souhaité.
+		\end{itemize}
+		
+	\end{proof}
 	
-	{\bf BLABLA PROUVER 1ER EGALITE}
-	
-	Or
+	Ainsi :
 	
 	\begin{align*}
-		\sup_{||v|| \leq 1} \; v^T D^2 \phi (u_j) &= \langle D^2 \phi (u_j) v, v \rangle \text{ avec le $v$ réalisant le $\sup$ }\\
-		&\leq ||D^2 \phi (u_j) v|| \cdot ||v|| \text{ par CS}\\
-		&\leq ||D^2 \phi (u_j)||_{op} \cdot ||v|| \text{ par définition de $||\cdot||_{op}$ et car $||v|| \leq 1$} \\
-		&\leq ||D^2 \phi (u_j)||_{op}
+		||D^2 g(u)||_{op} &= \sup_{||x|| \leq 1} |x^T D^2 g(u) x| \\
+		&= \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \frac{1}{m} \left | \sum_{j=1}^{m} x_j^T D^2 \phi (u_j) x_j \right | \text{ en effectuant un calcul par bloc.} \\
+		&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \sum_{j=1}^{m} \left | x_j^T D^2 \phi (u_j) x_j \right | \\
+		&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \sum_{j=1}^{m} \left | x_j^T D^2 \phi (u_j) x_j \right | \\
+		&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \sum_{j=1}^{m} ||D^2 \phi (u_j) x_j|| \cdot ||x_j|| \text{ par CS} \\
+		&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \sum_{j=1}^{m} ||D^2 \phi (u_j)||_{op} \cdot ||x_j||^2 \text{ par définition de $||\cdot||_{op}$} \\
+		&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \max_{j=1\cdots m} ||D^2 \phi (u_j)||_{op} \sum_{j=1}^{m} ||x_j||^2 \\
+		&\leq \frac{1}{m} \max_{j=1\cdots m} ||D^2 \phi (u_j)||_{op}
 	\end{align*}
+
+	On peut donc regarder comme précédemment le comportement pour pour $m$ grand de $f(u) \coloneqq \sqrt m g(u)$. Pour tout $h$, on a :
 	
-	Ainsi 
-	\[\frac{1}{m} \; \max_{j=1,\cdots,m} \; \sup_{||v|| \leq 1} \; v^T D^2 \phi (u_j) \leq \frac{1}{m} \; \max_{j=1,\cdots,m} ||D^2 \phi (u_j)||_{op} = \frac{1}{m} \; \sup_{u_j} ||D^2 \phi (u_j)||_{op}\]
+	\[ f(u^0 + h) \stackrel{m \to \infty}{\simeq} f(u^0) + ||\mathbb{E}(D \phi(u^0_j) D \phi(u^0_j)^T)||_{op}^{1/2} \langle V_u, h \rangle + \mathcal{O}\left(\frac{||h||^2}{\sqrt m}\right) \text{ avec $V_u \coloneqq \frac{D g(u)}{||D g(u)||_{op}}$ de norme op 1.} \]
 	
-	D'où $D^2 g(u) \leq \frac{1}{m} \; \sup_{u_j} ||D^2 \phi (u_j)||_{op}$
+	On voit donc que notre réseau de neurone se comporte encore une fois linéairement pour $m$ grand. \\
+
+	\subsection{Application}
+	
+	Revenons à notre objectif initial : le comportement asymptotique autour de l'initialisation des paramètres de ce NN :
+	
+	\[ \frac{1}{\sqrt{m}} \sum_{j=1}^{m} a_j \cdot \sigma (\langle {\bf b_j}, x \rangle) \]
+	
+	Ici $\phi (u_j) = a_j \cdot \sigma (\langle {\bf b_j}, x \rangle)$. \\
+	
+	Le réseau de neurone se comporte donc linéairement lorsque $m$ tend vers l'infini.
+	
+	\newpage
+	
+	\section{Résultats récents}
+	
+	\subsection{Cadre}
+	
+	Considérons un espace de paramètres $\mathbb{R}^p$, un espace de Hilbert $\mathcal{F}$, un modèle lisse $h : \mathbb{R}^p \to \mathcal{F}$ (un NN par exemple) et une fonction de perte lisse $R : \mathcal{F} \to \mathbb{R}_+$. On veut minimiser la fonction objectif normalisée $F_{\alpha} : \mathbb{R}^p \to \mathbb{R}_+$ : \[F_{\alpha} (w) \coloneqq \frac{1}{\alpha^2} R(\alpha h(w))\] pour un certain $\alpha \in \mathbb{R}_+$.
+	
+	On définit ensuite le modèle linéarisé autour de l'initialisation $w_0$ : $\bar{h} (w) \coloneqq h(w_0) + Dh(w_0)(w - w_0)$ et sa fonction objectif normalisée $\bar{F}_{\alpha} : \mathbb{R}^p \to \mathbb{R}_+$ : \[\bar{F}_{\alpha} (w) \coloneqq \frac{1}{\alpha^2} R(\alpha \bar{h}(w))\]
+	
+	Pour prouver les résultats qui suivent, on aura besoin d'hypothèses supplémentaires :
+		
+	{\bf Hypothèses : } $h$ est différentiable et de différentiel $Dh$ localement Lipschitz (par rapport à la norme opérateur). $R$ est différentiable et de gradient Lipschitz (par rapport à la norme euclidienne). \\
+	
+	{\bf Flot de gradient de $F_{\alpha}$ : } On étudie ci-dessous le flot de gradient de $F_{\alpha}$, qui est un chemin à temps continu $(w_{\alpha}(t))_{t\geq 0}$ de paramètres dans $\mathbb{R}^p$ qui veut minimiser $F_{\alpha}$, i.e qui résout l'équation différentielle 
+	\[w_{\alpha}'(t) = - \nabla F_{\alpha}(w_{\alpha}(t)) = Dh (w_{\alpha}(t))^T \nabla R (\alpha h(w_{\alpha}(t)))\] avec $w_{\alpha}(0) = w_0$. On comparera ce flot de gradient avec celui $\bar{w}_{\alpha}(t))_{t\geq 0}$ de $\bar{F}_{\alpha}$ qui résout
+	\[\bar{w}_{\alpha}'(t) = - \nabla F_{\alpha}(\bar{w}_{\alpha}(t)) = Dh (w_0)^T \nabla R (\alpha \bar{h}(\bar{w}_{\alpha}(t)))\] avec $\bar{w}_{\alpha}(0) = w_0$
+	
+	\subsection{Bornes à horizon fini}
+	
+	\begin{theorem}
+		Si $h(w_0) = 0$, alors pour un $T > 0$, on a :
+		\begin{itemize}
+			\item[$\bullet$] $\sup_{t \in [0, T]} ||w_{\alpha}(t) - w_0|| = \mathcal{O}(1 / \alpha)$
+			\item[$\bullet$] $\sup_{t \in [0, T]} ||w_{\alpha}(t) - \bar{w}_{\alpha}(t)|| = \mathcal{O}(1 / \alpha^2)$
+			\item[$\bullet$] $\sup_{t \in [0, T]} ||\alpha h(w_{\alpha}(t)) - \alpha \bar{h}(\bar{w}_{\alpha}(t))|| = \mathcal{O}(1 / \alpha)$
+		\end{itemize}
+	\end{theorem}
+	\begin{proof}
+		 Soient $y(t) \coloneqq \alpha h(w_{\alpha}(t))$ et $\bar{y}(t) \coloneqq \alpha \bar{h}(\bar{w}_{\alpha}(t))$. On a donc 
+		 \begin{align*}
+		 	y'(t) &= \alpha Dh(w_{\alpha}(t)) \cdot - \frac{1}{\alpha} Dh (w_{\alpha}(t))^T \nabla R (y(t)) \\
+		 	&= - Dh(w_{\alpha}(t)) Dh (w_{\alpha}(t))^T \nabla R(y(t)) \\
+	 		\bar{y}'(t) &= \alpha Dh(w_0) \cdot - \frac{1}{\alpha} Dh (w_0)^T \nabla R(\bar{y}(t)) \\
+	 		&= - Dh(w_0)Dh (w_0)^T \nabla R (\bar{y}(t))
+		 \end{align*}
+	 
+		On pose $\Sigma (w) \coloneqq Dh(w) \cdot Dh (w)^T$ pour simplifier les calculs. On a de même $y(0) = \bar{y}(0) = \alpha h(w_0) = 0$.
+		
+		Posons $C$ une constante, pouvant changer suivant les lignes, indépendante de $\alpha$.
+		
+		\[\int_0^T ||w_{\alpha}'(t)|| dt = \int_0^T ||\nabla F(w_{\alpha}(t))|| dt \stackrel{C.S}{\leq} \sqrt{T} \left( \int_0^T ||\nabla F(w_{\alpha}(t))||^2 dt \right)^{1/2} \] \\
+	 	
+	 	Or $\frac{d}{dt} F(w_{\alpha}(t)) = \nabla F(w_{\alpha}(t)) \cdot w_{\alpha}'(t) = -||\nabla F(w_{\alpha}(t))||^2$. \\
+	 	
+	 	On en déduit :
+	 	
+	 	\[\sup_{t \in [0, T]} ||w_{\alpha}(t) - w_0|| = \norm{\int_0^{t_{sup}} w_{\alpha}'(t) dt}  \leq \norm{\int_0^T w_{\alpha}'(t) dt} \leq \int_0^T ||w_{\alpha}'(t)|| dt \leq (T F_{\alpha}(w_{\alpha}(T)))^{1/2} \lesssim C / \alpha\]
+	 	
+	 	et que $\sup_{t \in [0, T]} ||y(t) - y(0)|| \leq C$ et $\sup_{t \in [0, T]} ||\nabla R(y(t))|| \leq C$. On a retrouvé le premier résultat. \\
+	 	
+	 	Posons $\Delta (t) \coloneqq ||y(t) - \bar{y}(t)||$. On a $\Delta(0) = 0$ et
+	 	
+	 	\begin{align*}
+	 		\Delta ' (t) &\leq ||\Sigma(w_{\alpha}(t)) \nabla R (y(t)) - \Sigma(w_0) \nabla R (\bar{y}(t))||_{op} \\
+	 		&= ||(\Sigma(w_{\alpha}(t)) - \Sigma(w_0)) \nabla R (y(t)) + \Sigma(w_0) (\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{op} \\ 
+	 		&\stackrel{I.T}{\leq} ||(\Sigma(w_{\alpha}(t)) - \Sigma(w_0)) \nabla R (y(t))||_{op} + ||\Sigma(w_0) (\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{op} \\
+	 		&\leq ||\Sigma(w_{\alpha}(t)) - \Sigma(w_0)||_{op} \cdot || \nabla R (y(t))|| + ||\Sigma(w_0)||_{op}\cdot||\nabla R (y(t)) - \nabla R (\bar{y}(t)))|| \\
+	 		&\leq C_1 / \alpha + C_2 \cdot \Delta(t)
+	 	\end{align*}
+ 	
+ 		Or l'équation différentielle $u'(t) =  C_1 / \alpha + C_2 \cdot u(t)$ avec $u(0) = 0$ a une unique solution qui est $u(t) = \frac{C_1}{\alpha C_2} (\exp(C_2 t) - 1)$. Donc d'après le théorème de Petrovitsch, $\Delta(t) \leq \frac{C_1}{\alpha C_2} (\exp(C_2 t) - 1) \leq C / \alpha$. D'où le troisième résultat. \\
+ 		
+ 		Maintenant posons $\delta(t) \coloneqq ||w_{\alpha}(t) - \bar{w}_{\alpha}(t)||$
+ 		
+ 		\begin{align*}
+ 			\delta ' (t) &\leq \alpha^{-1} ||Dh (w_{\alpha}(t))^T \nabla R (y(t)) - Dh (w_0)^T \nabla R (\bar{y}(t))||_{op} \\
+ 			&= \alpha^{-1} ||(Dh (w_{\alpha}(t))^T - Dh (w_0)^T)\nabla R (y(t)) + Dh (w_0)^T (\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{op} \\
+ 			&\leq \alpha^{-1} ||Dh (w_{\alpha}(t))^T - Dh (w_0)^T||_{op}\cdot||\nabla R (y(t))|| + \alpha^{-1} ||Dh (w_0)^T||_{op} \cdot ||\nabla R (y(t)) - \nabla R (\bar{y}(t))|| \\
+ 			&\leq C / \alpha^2 + C / \alpha^2
+ 		\end{align*}
+ 	
+ 		En intégrand par rapport à $t$, on retrouve le deuxième résultat. 
+	 
+	\end{proof}
 	
 	
+	
+	
+
 \end{document}
