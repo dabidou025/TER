@@ -1,25 +1,27 @@
 \babel@toc {french}{}
-\contentsline {section}{\numberline {1}Reproducing Kernel Hilbert space (RKHS) et leurs applications}{3}{}%
-\contentsline {subsection}{\numberline {1.1}Cadre théorique}{3}{}%
-\contentsline {subsection}{\numberline {1.2}Applications des RKHS en machine learning}{6}{}%
-\contentsline {subsubsection}{\numberline {1.2.1}Representer theorem}{6}{}%
-\contentsline {subsubsection}{\numberline {1.2.2}Exemple 1 : Kernel Ridge Regression}{6}{}%
-\contentsline {subsubsection}{\numberline {1.2.3}Exemple 2 : Support Vector Machine (SVM)}{7}{}%
-\contentsline {subsubsection}{\numberline {1.2.4}Le Kernel Trick}{8}{}%
-\contentsline {section}{\numberline {2}Introduction : Réseau de neurone simple}{8}{}%
-\contentsline {subsection}{\numberline {2.1}Lois suivant la largeur des couches $m$}{8}{}%
-\contentsline {subsection}{\numberline {2.2}Gradients}{9}{}%
-\contentsline {subsection}{\numberline {2.3}Descente de gradient}{10}{}%
-\contentsline {subsubsection}{\numberline {2.3.1}Choix de $\eta $}{10}{}%
-\contentsline {subsubsection}{\numberline {2.3.2}Ordres de grandeur des écarts relatifs}{10}{}%
-\contentsline {subsubsection}{\numberline {2.3.3}Choix de $\alpha $}{11}{}%
-\contentsline {section}{\numberline {3}Généralisation à un cas particulier}{13}{}%
-\contentsline {subsection}{\numberline {3.1}Objectif}{13}{}%
-\contentsline {subsection}{\numberline {3.2}Cas simple}{13}{}%
-\contentsline {subsection}{\numberline {3.3}Cas général}{15}{}%
-\contentsline {subsubsection}{\numberline {3.3.1}Dérivées premières}{15}{}%
-\contentsline {subsubsection}{\numberline {3.3.2}Dérivées secondes}{16}{}%
-\contentsline {subsection}{\numberline {3.4}Application}{17}{}%
-\contentsline {section}{\numberline {4}Résultats récents}{18}{}%
-\contentsline {subsection}{\numberline {4.1}Cadre}{18}{}%
-\contentsline {subsection}{\numberline {4.2}Bornes à horizon fini}{18}{}%
+\contentsline {section}{\numberline {1}Introduction}{3}%
+\contentsline {section}{\numberline {2}Reproducing Kernel Hilbert space (RKHS) et leurs applications}{4}%
+\contentsline {subsection}{\numberline {2.1}Cadre théorique}{4}%
+\contentsline {subsection}{\numberline {2.2}Applications des RKHS en machine learning}{7}%
+\contentsline {subsubsection}{\numberline {2.2.1}Representer theorem}{7}%
+\contentsline {subsubsection}{\numberline {2.2.2}Exemple 1 : Kernel Ridge Regression}{7}%
+\contentsline {subsubsection}{\numberline {2.2.3}Exemple 2 : Support Vector Machine (SVM)}{8}%
+\contentsline {subsubsection}{\numberline {2.2.4}Le Kernel Trick}{9}%
+\contentsline {section}{\numberline {3}Introduction : Réseau de neurone simple}{10}%
+\contentsline {subsection}{\numberline {3.1}Lois suivant la largeur des couches $m$}{10}%
+\contentsline {subsection}{\numberline {3.2}Gradients}{11}%
+\contentsline {subsection}{\numberline {3.3}Descente de gradient}{11}%
+\contentsline {subsubsection}{\numberline {3.3.1}Choix de $\eta $}{11}%
+\contentsline {subsubsection}{\numberline {3.3.2}Ordres de grandeur des écarts relatifs}{12}%
+\contentsline {subsubsection}{\numberline {3.3.3}Choix de $\alpha $}{13}%
+\contentsline {section}{\numberline {4}Généralisation à un cas particulier}{15}%
+\contentsline {subsection}{\numberline {4.1}Objectif}{15}%
+\contentsline {subsection}{\numberline {4.2}Cas simple}{15}%
+\contentsline {subsection}{\numberline {4.3}Cas général}{16}%
+\contentsline {subsubsection}{\numberline {4.3.1}Dérivées premières}{16}%
+\contentsline {subsubsection}{\numberline {4.3.2}Dérivées secondes}{17}%
+\contentsline {subsection}{\numberline {4.4}Application}{19}%
+\contentsline {section}{\numberline {5}Résultats récents}{20}%
+\contentsline {subsection}{\numberline {5.1}Cadre}{20}%
+\contentsline {subsection}{\numberline {5.2}Bornes à horizon fini}{20}%
+\contentsline {subsection}{\numberline {5.3}Interprétation}{21}%

@@ -47,6 +47,18 @@
 	\tableofcontents
 	\newpage
 	
+	\section{Introduction}
+	
+	Ce rapport présente le travail encadré de recherche réalisé durant cet été 2021 sous la direction de M. Giraud au laboratoire de Mathématiques d'Orsay. Je tiens à le remercier de m'avoir proposé ce sujet, encadré, guidé et apporté son expertise pendant l'entièreté de ce stage. On traitera dans ce rapport les méthodes à noyau et des résultats théoriques sur les réseaux de neurones (NN). \\
+	
+	En machine learning, les méthodes à noyau sont très utiles car elles permettent de transformer des algorithmes linéaires en algorithmes non-linéaires (le fameux kernel trick). On présentera premièrement le cadre théorique ainsi que des théorèmes amenant au kernel trick. \\
+	
+	On étudiera ensuite le comportement asymptotique en la largeur des couches des réseaux de neurones, dans le cas où l'on initialise les paramètres et normalise d'une certaine manière ces NN. D'abord avec un cas simple : un NN linéaire. Ensuite à certains NN à deux couches. Puis finalement, en reprenant les résultats d'une publication de Chizat, un cas général qui englobe les NN ainsi que d'autres modèles lisses sous certaines hypothèses.  \\
+	
+	On essaiera dans tous les cas de voir apparaître un comportement dit "fénéant" de ces NN, qui se comportent comme des modèles linéaires lorsque la largeur des couches est grande.
+	
+	\newpage
+	
 	\section{Reproducing Kernel Hilbert space (RKHS) et leurs applications}
 	
 	\subsection{Cadre théorique}
@@ -123,7 +135,7 @@
 	\end{property}
 	\begin{proof}
 		Montrons l'existence puis l'unicité : \\
-		\begin{itemize}
+		\begin{itemize} 
 			\item[$\bullet$]
 			On applique le théorème de Riesz à $L_x$ :
 			\[\forall x \in X, \; \exists ! \, k_x \in H, \; \forall f \in H, \; f(x) = L_x (f) = \langle f, k_x \rangle_H\]
@@ -294,7 +306,7 @@
 	
 	Plus généralement, à tout algorithme qui utilise des produits scalaires, on peut les remplacer par un kernel. Ainsi on peut transformer rendre non-linéaires les algorithmes, en manipulant des vecteurs de dimensions infinie sans que cela pose problème, comme leur produit scalaire est égal au kernel. C'est ce qu'on appelle le "kernel trick", et il a une très grande importance dans les applications pratiques. Par exemple, ce que l'on a fait plus haut avec peut aussi être fait avec le kernel trick dans la preuve de la construction de la solution linéaire en remplacant $\langle \cdot, \cdot \rangle$ par $\langle \phi(\cdot), \phi(\cdot) \rangle = k(\cdot, \cdot)$.
 	
-	
+	\newpage
 	
 	\section{Introduction : Réseau de neurone simple}
 	
@@ -359,7 +371,7 @@
 		
 		\item[$\bullet$][$\bullet$] Loi de $ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 $ pour $m$ grand\\
 		
-		On a {\bf JUSTIFIER MEME CHOSE QU AU DESSUS}
+		On peut encore une fois de la même manière montrer que 
 		$ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 \sim N(0,  x^2 m^{1 - 2\alpha}) $
 		\\
 		
@@ -415,7 +427,7 @@
 	 
 	 \[
 	 \nabla_{\theta} F(\Phi(\theta^0, x)) = 
-	 \brace{F'(\Phi(\theta^0, x))}_\text{constante en $m$} 
+	 \underbrace{F'(\Phi(\theta^0, x))}_\text{constante en $m$} 
 	 \cdot \nabla_{\theta} \Phi(\theta^0, x)
 	 \]
 	 
@@ -732,7 +744,7 @@
 	
 	Pour prouver les résultats qui suivent, on aura besoin d'hypothèses supplémentaires :
 		
-	{\bf Hypothèses : } $h$ est différentiable et de différentiel $Dh$ localement Lipschitz (par rapport à la norme opérateur). $R$ est différentiable et de gradient Lipschitz (par rapport à la norme euclidienne). \\
+	{\bf Hypothèses : } $h$ est différentiable et de différentiel $Dh$ localement Lipschitz (par rapport à la norme opérateur). $R$ est différentiable et de gradient Lipschitz (par rapport à la norme de $\mathcal{F}$). \\
 	
 	{\bf Flot de gradient de $F_{\alpha}$ : } On étudie ci-dessous le flot de gradient de $F_{\alpha}$, qui est un chemin à temps continu $(w_{\alpha}(t))_{t\geq 0}$ de paramètres dans $\mathbb{R}^p$ qui veut minimiser $F_{\alpha}$, i.e qui résout l'équation différentielle 
 	\[w_{\alpha}'(t) = - \nabla F_{\alpha}(w_{\alpha}(t)) = Dh (w_{\alpha}(t))^T \nabla R (\alpha h(w_{\alpha}(t)))\] avec $w_{\alpha}(0) = w_0$. On comparera ce flot de gradient avec celui $\bar{w}_{\alpha}(t))_{t\geq 0}$ de $\bar{F}_{\alpha}$ qui résout
@@ -767,37 +779,37 @@
 	 	
 	 	On en déduit :
 	 	
-	 	\[\sup_{t \in [0, T]} ||w_{\alpha}(t) - w_0|| = \norm{\int_0^{t_{sup}} w_{\alpha}'(t) dt}  \leq \norm{\int_0^T w_{\alpha}'(t) dt} \leq \int_0^T ||w_{\alpha}'(t)|| dt \leq (T F_{\alpha}(w_{\alpha}(T)))^{1/2} \lesssim C / \alpha\]
+	 	\[\sup_{t \in [0, T]} ||w_{\alpha}(t) - w_0|| = \norm{\int_0^{t_{sup}} w_{\alpha}'(t) dt}  \leq \int_0^{t_{sup}} ||w_{\alpha}'(t)|| dt \leq (t_{sup} \cdot F_{\alpha}(w_{\alpha}(0)))^{1/2} \lesssim C / \alpha\]
 	 	
 	 	et que $\sup_{t \in [0, T]} ||y(t) - y(0)|| \leq C$ et $\sup_{t \in [0, T]} ||\nabla R(y(t))|| \leq C$. On a retrouvé le premier résultat. \\
 	 	
-	 	Posons $\Delta (t) \coloneqq ||y(t) - \bar{y}(t)||$. On a $\Delta(0) = 0$ et
+	 	Posons $\Delta (t) \coloneqq ||y(t) - \bar{y}(t)||_{\mathcal{F}}$. On a $\Delta(0) = 0$ et $\Delta '(t) = \langle \frac{y(t) - \bar{y}(t)}{||y(t) - \bar{y}(t)||_{\mathcal{F}}}, y'(t) - \bar{y}'(t) \rangle$. Et par C-S :
 	 	
 	 	\begin{align*}
-	 		\Delta ' (t) &\leq ||\Sigma(w_{\alpha}(t)) \nabla R (y(t)) - \Sigma(w_0) \nabla R (\bar{y}(t))||_{op} \\
-	 		&= ||(\Sigma(w_{\alpha}(t)) - \Sigma(w_0)) \nabla R (y(t)) + \Sigma(w_0) (\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{op} \\ 
-	 		&\stackrel{I.T}{\leq} ||(\Sigma(w_{\alpha}(t)) - \Sigma(w_0)) \nabla R (y(t))||_{op} + ||\Sigma(w_0) (\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{op} \\
-	 		&\leq ||\Sigma(w_{\alpha}(t)) - \Sigma(w_0)||_{op} \cdot || \nabla R (y(t))|| + ||\Sigma(w_0)||_{op}\cdot||\nabla R (y(t)) - \nabla R (\bar{y}(t)))|| \\
+	 		\Delta ' (t) &\leq ||\Sigma(w_{\alpha}(t)) \nabla R (y(t)) - \Sigma(w_0) \nabla R (\bar{y}(t))||_{\mathcal{F}}\\
+	 		&= ||(\Sigma(w_{\alpha}(t)) - \Sigma(w_0)) \nabla R (y(t)) + \Sigma(w_0) (\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{\mathcal{F}} \\ 
+	 		&\stackrel{I.T}{\leq} ||(\Sigma(w_{\alpha}(t)) - \Sigma(w_0)) \nabla R (y(t))||_{\mathcal{F}} + ||\Sigma(w_0) (\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{\mathcal{F}} \\
+	 		&\leq ||\Sigma(w_{\alpha}(t)) - \Sigma(w_0)||_{op} \cdot || \nabla R (y(t))||_{\mathcal{F}} + ||\Sigma(w_0)||_{op}\cdot||\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{\mathcal{F}} \\
 	 		&\leq C_1 / \alpha + C_2 \cdot \Delta(t)
 	 	\end{align*}
  	
  		Or l'équation différentielle $u'(t) =  C_1 / \alpha + C_2 \cdot u(t)$ avec $u(0) = 0$ a une unique solution qui est $u(t) = \frac{C_1}{\alpha C_2} (\exp(C_2 t) - 1)$. Donc d'après le théorème de Petrovitsch, $\Delta(t) \leq \frac{C_1}{\alpha C_2} (\exp(C_2 t) - 1) \leq C / \alpha$. D'où le troisième résultat. \\
  		
- 		Maintenant posons $\delta(t) \coloneqq ||w_{\alpha}(t) - \bar{w}_{\alpha}(t)||$
+ 		Maintenant posons $\delta(t) \coloneqq ||w_{\alpha}(t) - \bar{w}_{\alpha}(t)||$.  $\delta '(t) = \langle \frac{w_{\alpha}(t) - \bar{w}_{\alpha}(t)}{||w_{\alpha}(t) - \bar{w}_{\alpha}(t)||}, w_{\alpha}'(t) - \bar{w}_{\alpha}'(t) \rangle$. Et par C-S :
  		
  		\begin{align*}
- 			\delta ' (t) &\leq \alpha^{-1} ||Dh (w_{\alpha}(t))^T \nabla R (y(t)) - Dh (w_0)^T \nabla R (\bar{y}(t))||_{op} \\
- 			&= \alpha^{-1} ||(Dh (w_{\alpha}(t))^T - Dh (w_0)^T)\nabla R (y(t)) + Dh (w_0)^T (\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{op} \\
- 			&\leq \alpha^{-1} ||Dh (w_{\alpha}(t))^T - Dh (w_0)^T||_{op}\cdot||\nabla R (y(t))|| + \alpha^{-1} ||Dh (w_0)^T||_{op} \cdot ||\nabla R (y(t)) - \nabla R (\bar{y}(t))|| \\
+ 			\delta ' (t) &\leq \alpha^{-1} ||Dh (w_{\alpha}(t))^T \nabla R (y(t)) - Dh (w_0)^T \nabla R (\bar{y}(t))|| \\
+ 			&= \alpha^{-1} ||(Dh (w_{\alpha}(t))^T - Dh (w_0)^T)\nabla R (y(t)) + Dh (w_0)^T (\nabla R (y(t)) - \nabla R (\bar{y}(t)))|| \\
+ 			&\leq \alpha^{-1} ||Dh (w_{\alpha}(t))^T - Dh (w_0)^T||_{op}\cdot||\nabla R (y(t))||_{\mathcal{F}} + \alpha^{-1} ||Dh (w_0)^T||_{op} \cdot ||\nabla R (y(t)) - \nabla R (\bar{y}(t))|| _{\mathcal{F}}\\
  			&\leq C / \alpha^2 + C / \alpha^2
  		\end{align*}
  	
- 		En intégrand par rapport à $t$, on retrouve le deuxième résultat. 
+ 		En intégrant par rapport à $t$, on retrouve le deuxième résultat. 
 	 
 	\end{proof}
 	
+	\subsection{Interprétation}
 	
-	
-	
+	Ce qu'il se passe, c'est qu'on a le même genre de résultats que précédemment mais pour n'importequel modèle lisse : en prenant un paramètre de normalisation $\alpha$ (par exemple la largeur des couches d'un NN), on se retrouve dans une situation où après un nombre fini de pas de gradients, on est toujours proche de l'initialisation, et encore plus du modèle linéarisé. La sortie régularisée de ce modèle est aussi proche de celle du modèle linéarisé : on se comporte pour $\alpha$ grand de la même manière qu'un modèle linéaire.
 
 \end{document}
