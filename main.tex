@@ -65,6 +65,9 @@
 	
 	Nous allons dans cette section s'intéresser aux RKHS, des espaces de Hilbert réels qui satisfont certaines propriétés, et qui ont des applications intéressantes en machine learning. Par exemple, on montrera un théorème qui nous permet de simplifier un problème de minimisation de risque empirique de dimension infini à un problème en dimension fini. Ou encore des applications dans plusieurs algorithmes de ML, les transformant d'algorithmes linéaires à non-linéaires à très faible prix, et d'autres encore. \\
 	
+	Posons d'abord quelques définitions et résultats concernant les RKHS, avant de passer aux applications.
+	\\
+	
 	Soit $X$ un ensemble quelconque, $H$ un espace de Hilbert de fonctions réelles sur $X$, muni de l'addition point par point ainsi que de la multiplication par scalaire point par point. On introduit aussi une forme linéaire qui à chaque fonction de $H$ l'évalue en un certain point $x \in X$,
 	
 	\[L_x : f \mapsto f(x) \; \forall f \in H\]
@@ -76,7 +79,7 @@
 
 	Dans ce qui suit, $H$ sera un RKHS.
 
-	\begin{property}[Convergence en norme dans un RKHS implique pointwise convergence]
+	\begin{property}[Convergence en norme dans un RKHS implique convergence point par point]
 		Soient $f_n, \, f \in H$. Si $f_n \stackrel{H}{\to} f$, alors $\forall x \in X, \; f_n(x) \to f(x)$.
 	\end{property}
 	\begin{proof}
@@ -120,6 +123,8 @@
 		En prenant $f = k(\cdot, y) \in H$ pour un certain $y \in X$ dans la définition, on a en particulier $\forall x, y \in X \; k(x,y) = \langle k(\cdot, x), k(\cdot, y) \rangle_H$. Ici $\phi(u) = k(\cdot, u) \; \forall u \in X$.
 	\end{proof}
 
+	Le théorème de représentation de Riesz est utile pour montrer la propriété suivante, on l'énoncera seulement.
+
 	\begin{theorem}[Théorème de représentation de Riesz]
 		Soient :
 		\begin{itemize}
@@ -159,7 +164,7 @@
 	\begin{proof}
 		\begin{itemize}
 			\item[$\bullet$] $(\Rightarrow)$
-				Donné par \ref{th:existunicity} 
+				Donné par la propriété \ref{th:existunicity} 
 			\item[$\bullet$] $(\Leftarrow)$ $\forall x \in X, \, f \in H$
 				\[|L_x(f)| = |f(x)| = |\langle f, k(\cdot, x) \rangle_H| \leq ||f||_H ||k(\cdot,x)||_H = \underbrace{\sqrt{k(x,x)}}_{\text{$M_x$}} ||f||_H\]
 				$M_x$ ne dépendant pas de $f$, on a bien l'inégalité $\forall x \in X, \;  \exists M_x > 0, \; \forall f \in H$, i.e $H$ est un RKHS.
@@ -181,7 +186,7 @@
 		
 		\[\forall x \in X, \; f \in H_0, \; \langle f, K_x \rangle_{H_0} = \sum_{i=1}^n a_i K_x(x_i) = \sum_{i=1}^n a_i K_{x_i}(x) = f(x)\]
 		
-		Il reste à montrer que $||f||_{H_0} = 0 \Rightarrow f = 0$ pour que ca soit un produit scalaire : {\bf CAUCHY SCHWARZ POUR SEMI INNER PRODUCT}
+		Il reste à montrer que $||f||_{H_0} = 0 \Rightarrow f = 0$ pour que ca soit un produit scalaire : (on utilise CS pour les semi produits scalaires)
 		
 		\[|f(x)| = |\langle f, K_x \rangle_{H_0}| \leq ||f||_{H_0} ||K_x||_{H_0} = ||f||_{H_0} \sqrt{K(x,x)} \]
 		
@@ -220,7 +225,7 @@
 	
 	\subsection{Applications des RKHS en machine learning}
 	
-	Une application très importante des RKHS est le Representer theorem, un théorème qui permet de transformer des problèmes d'optimisation de dimension infinie en dimension finie, qu'on pourra alors résoudre avec les méthodes d'optimisation numérique. On verra son application avec le Kernel Ridge Regression et avec les SVM.
+	Une application très importante des RKHS est le Representer theorem, un théorème qui permet de transformer des problèmes d'optimisation de dimension infinie en dimension finie, que l'on pourra alors résoudre avec les méthodes d'optimisation numérique. On verra son application avec le Kernel Ridge Regression et avec les SVM.
 	
 	\subsubsection{Representer theorem}
 	

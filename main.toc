@@ -4,7 +4,7 @@
 \contentsline {subsection}{\numberline {2.1}Cadre théorique}{4}%
 \contentsline {subsection}{\numberline {2.2}Applications des RKHS en machine learning}{7}%
 \contentsline {subsubsection}{\numberline {2.2.1}Representer theorem}{7}%
-\contentsline {subsubsection}{\numberline {2.2.2}Exemple 1 : Kernel Ridge Regression}{7}%
+\contentsline {subsubsection}{\numberline {2.2.2}Exemple 1 : Kernel Ridge Regression}{8}%
 \contentsline {subsubsection}{\numberline {2.2.3}Exemple 2 : Support Vector Machine (SVM)}{8}%
 \contentsline {subsubsection}{\numberline {2.2.4}Le Kernel Trick}{9}%
 \contentsline {section}{\numberline {3}Introduction : Réseau de neurone simple}{10}%
