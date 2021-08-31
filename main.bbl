@@ -1,0 +1,20 @@
+\begin{thebibliography}{1}
+
+\bibitem{mia}
+Christophe Giraud.
+\newblock {\em Mathematics for Artificial Intelligence}, page~80.
+\newblock 2020.
+
+\bibitem{chizat}
+Francis~Bach Lénaïc~Chizat, Edouard~Oyallon.
+\newblock On lazy training in differentiable programming.
+\newblock 2018.
+
+\bibitem{eecs}
+Clayton Scott.
+\newblock {Kernel Methods and the Representer Theorem}.
+\newblock
+  \url{http://web.eecs.umich.edu/~cscott/past_courses/eecs598w14/notes/13_kernel_methods.pdf},
+  2014.
+
+\end{thebibliography}

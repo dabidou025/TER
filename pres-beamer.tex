@@ -172,5 +172,98 @@
 	\[k(x,y)=\langle\nabla_{\theta} F(\Phi(\theta^0, x)),\nabla_{\theta} F(\Phi(\theta^0, y))\rangle \stackrel{LGN}{\longrightarrow} \mathbb{E}[\langle\nabla_{\theta} F(\Phi(\theta^0, x)),\nabla_{\theta} F(\Phi(\theta^0, y))\rangle]\]
 \end{frame}
 
+\section{2-NN}
+
+\begin{frame}
+	\frametitle{Généralisation à un certain NN}
+	
+	\[ \frac{1}{\sqrt{m}} \sum_{j=1}^{m} a_j \cdot \sigma (\langle {\bf b_j}, x \rangle) \]
+	
+	\pause
+	
+	\begin{center}
+		\includegraphics[width=9cm, height=5cm]{2nn.jpg} 
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Généralisation à un certain NN}
+	On considère $f(u) \coloneqq \sqrt{m} g(u)$ avec
+	 \[g(u) \coloneqq \frac{1}{m} \sum_{j=1}^{m} \phi(u_j) \text{ et } \phi : \mathbb{R}^d \to \mathbb{R} \]
+	Initialisation : $u_j^0 \sim_{iid} N(0,1)$s
+\end{frame}
+
+\begin{frame}
+	\frametitle{Généralisation à un certain NN}
+	Résultat :
+	\[ f(u^0 + h) \stackrel{m \to \infty}{\simeq} f(u^0) + ||\mathbb{E}(D \phi(u^0_j) D \phi(u^0_j)^T)||_{op}^{1/2} \langle V_u, h \rangle + \mathcal{O}\left(\frac{||h||^2}{\sqrt m}\right) \]
+	\[\text{ avec $V_u \coloneqq \frac{D g(u)}{||D g(u)||_{op}}$ de norme 1} \]
+	
+	\pause
+	
+	Quand on prend $\phi (u_j^0) = a_j^0 \cdot \sigma (\langle {\bf b_j^0}, x \rangle)$
+	
+	\[ f(u^0) = \frac{1}{\sqrt{m}} \sum_{j=1}^{m} a_j^0 \cdot \sigma (\langle {\bf b_j^0}, x \rangle) \]
+\end{frame}
+
+\section{Généralisation}
+
+\begin{frame}
+	\frametitle{Résultats récents}
+	
+	\begin{itemize}
+		\item[$\bullet$] Un espace de paramètres $\mathbb{R}^p$
+		\pause
+		\item[$\bullet$] Un espace de Hilbert $\mathcal{F}$
+		\pause
+		\item[$\bullet$] Un modèle lisse $h : \mathbb{R}^p \to \mathcal{F}$
+		\pause
+		\item[$\bullet$] Une fonction de perte lisse $R : \mathcal{F} \to \mathbb{R}_+$
+	\end{itemize}
+
+\pause
+
+	 On veut minimiser la fonction objectif normalisée $F_{\alpha} : \mathbb{R}^p \to \mathbb{R}_+$ : \[F_{\alpha} (w) \coloneqq \frac{1}{\alpha^2} R(\alpha h(w))\] pour un certain $\alpha \in \mathbb{R}_+$.
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Résultats récents}
+
+On définit ensuite le modèle linéarisé autour de l'initialisation $w_0$ : \[\bar{h} (w) \coloneqq h(w_0) + Dh(w_0)(w - w_0)\] et sa fonction objectif normalisée $\bar{F}_{\alpha} : \mathbb{R}^p \to \mathbb{R}_+$ : \[\bar{F}_{\alpha} (w) \coloneqq \frac{1}{\alpha^2} R(\alpha \bar{h}(w))\]
+
+\pause
+
+{\bf Hypothèses : } $h$ est différentiable et de différentiel $Dh$ localement Lipschitz (par rapport à la norme opérateur). $R$ est différentiable et de gradient Lipschitz (par rapport à la norme de $\mathcal{F}$). \\
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Résultats récents}
+
+ On étudie le flot de gradient de $F_{\alpha}$, qui est un chemin à temps continu $(w_{\alpha}(t))_{t\geq 0}$ de paramètres dans $\mathbb{R}^p$ qui veut minimiser $F_{\alpha}$, i.e qui résout l'équation différentielle 
+\[w_{\alpha}'(t) = - \nabla F_{\alpha}(w_{\alpha}(t))\] avec $w_{\alpha}(0) = w_0$.
+
+\pause
+
+ On comparera ce flot de gradient avec celui $\bar{w}_{\alpha}(t))_{t\geq 0}$ de $\bar{F}_{\alpha}$ qui résout
+\[\bar{w}_{\alpha}'(t) = - \nabla F_{\alpha}(\bar{w}_{\alpha}(t))\] avec $\bar{w}_{\alpha}(0) = w_0$
+\end{frame}
+
+\begin{frame}
+	\frametitle{Résultats récents}
+\begin{theorem}
+	Si $h(w_0) = 0$, alors pour un $T > 0$, on a :
+	\begin{itemize}
+		\item[$\bullet$] $\sup_{t \in [0, T]} ||w_{\alpha}(t) - w_0|| = \mathcal{O}(1 / \alpha)$
+		\pause
+		\item[$\bullet$] $\sup_{t \in [0, T]} ||w_{\alpha}(t) - \bar{w}_{\alpha}(t)|| = \mathcal{O}(1 / \alpha^2)$
+		\pause
+		\item[$\bullet$] $\sup_{t \in [0, T]} ||\alpha h(w_{\alpha}(t)) - \alpha \bar{h}(\bar{w}_{\alpha}(t))|| = \mathcal{O}(1 / \alpha)$
+	\end{itemize}
+\end{theorem}
+\end{frame}
+
+
 
 \end{document}

@@ -2,11 +2,15 @@
 \usepackage[utf8]{inputenc}
 \usepackage[margin=1.5cm,headheight=52pt,includeheadfoot]{geometry} 
 \usepackage{mathtools} %amsmath mis à jour
-\usepackage{amssymb} %symboles mathématiques
+\usepackage{amssymb} %symboles mat	hématiques
 \usepackage{latexsym}
 \usepackage{stmaryrd} 
 \usepackage{babel} %gestion du français
 \usepackage{amsthm}
+\usepackage{url}
+
+\usepackage{geometry}
+\geometry{a4paper, portrait, margin=1in}
 
 \renewcommand{\labelitemi}{∙}
 
@@ -55,7 +59,7 @@
 	
 	On étudiera ensuite le comportement asymptotique en la largeur des couches des réseaux de neurones, dans le cas où l'on initialise les paramètres et normalise d'une certaine manière ces NN. D'abord avec un cas simple : un NN linéaire. Ensuite à certains NN à deux couches. Puis finalement, en reprenant les résultats d'une publication de Chizat, un cas général qui englobe les NN ainsi que d'autres modèles lisses sous certaines hypothèses.  \\
 	
-	On essaiera dans tous les cas de voir apparaître un comportement dit "fénéant" de ces NN, qui se comportent comme des modèles linéaires lorsque la largeur des couches est grande.
+	On essaiera dans tous les cas de voir apparaître un comportement linéaire des réseaux de neurones lorsque la largeur des couches est grande.
 	
 	\newpage
 	
@@ -113,8 +117,6 @@
 		\end{itemize}
 	\end{definition}
 
-	\newpage
-
 	\begin{property}
 	\label{prop:reprotokernel}
 		Tout noyau reproduisant $k$ est un noyau.
@@ -138,24 +140,6 @@
 	\label{th:existunicity}
 		Si $H$ est un RKHS, alors il existe un unique noyau reproduisant de $H$.
 	\end{property}
-	\begin{proof}
-		Montrons l'existence puis l'unicité : \\
-		\begin{itemize} 
-			\item[$\bullet$]
-			On applique le théorème de Riesz à $L_x$ :
-			\[\forall x \in X, \; \exists ! \, k_x \in H, \; \forall f \in H, \; f(x) = L_x (f) = \langle f, k_x \rangle_H\]
-			Soit $k(y, x) \coloneqq k_x(y) \; \forall x,y \in X$, alors $\forall x \in X, \, f \in H, \; k(\cdot, x) \in H$ et  $f(x) = \langle f, k(\cdot, x) \rangle_H$.
-			
-			Donc $k$ est un noyau reproduisant de $H$.
-			
-			\item[$\bullet$]
-			Soient $k_1$ et $k_2$ deux noyau reproduisant de $H$. Alors $\forall x \in X, \, f \in H$
-			\[\langle f, k_1(\cdot, x) - k_2(\cdot, x) \rangle_H = f(x) - f(x) = 0\]
-			En prenant $f = k_1(\cdot, x) - k_2(\cdot, x)$, on a :
-			\[\left|\left| k_1(\cdot, x) - k_2(\cdot, x) \right|\right|_H^2 = 0\]
-			C'est-à-dire que $k_1 = k_2$ : le noyau reproduisant de $H$ est unique.
-		\end{itemize}
-	\end{proof}
 
 	\begin{theorem}[Lien des deux visions]
 		\label{th:link2visions}
@@ -175,46 +159,10 @@
 	\label{th:mooaron}
 	 	Soit K un kernel. Alors il existe un unique espace de Hilbert $H$ de fonctions sur $X$ pour lequel $K$ est un noyau reproduisant.
 	\end{theorem}
-	\begin{proof}
-		$\forall x \in X$, on pose $K_x(\cdot) \coloneqq K(x, \cdot)$. Soit $H_0$ le sous-espace vectoriel engendré par \\ $\{K_x : x \in X\}$. Sous couvert d'existence de $H$, la reproducing property de $K$ nous assure que $\forall x, y \in X, \; K(x, y) = \langle K_x, K_y \rangle_H$. On a de même :
-		\[\left\langle \sum_{i=1}^{n} a_i K_{x_i}, \sum_{j=1}^{m} b_j K_{x_j} \right\rangle_H = \sum_{i=1}^{n} \sum_{j=1}^{m} a_i b_j K(x_i, x_j)\]
-		
-		Il est alors naturel de définir pour toutes fonctions de $H_0$ : $f \coloneqq \sum_{i=1}^n a_i K_{x_i}$ et $g \coloneqq \sum_{j=1}^m b_i K_{y_j}$ 
-		\[\langle f, g \rangle_{H_0} \coloneqq \sum_{i=1}^{n} \sum_{j=1}^{m} a_i b_j K(x_i, y_j) = \sum_{i=1}^n a_i g(x_i) = \sum_{j=1}^m b_j f(y_j)\]
-		
-		Les deux dernières égalités nous assure que $\langle \cdot, \cdot \rangle_{H_0}$ est bien défini. De plus, il est billinéaire, symétrique et positif, et on a la reproducing property :
-		
-		\[\forall x \in X, \; f \in H_0, \; \langle f, K_x \rangle_{H_0} = \sum_{i=1}^n a_i K_x(x_i) = \sum_{i=1}^n a_i K_{x_i}(x) = f(x)\]
-		
-		Il reste à montrer que $||f||_{H_0} = 0 \Rightarrow f = 0$ pour que ca soit un produit scalaire : (on utilise CS pour les semi produits scalaires)
-		
-		\[|f(x)| = |\langle f, K_x \rangle_{H_0}| \leq ||f||_{H_0} ||K_x||_{H_0} = ||f||_{H_0} \sqrt{K(x,x)} \]
-		
-		Donc $\langle \cdot, \cdot \rangle_{H_0}$ est un produit scalaire. \\
-		
-		On complète $H_0$ avec le produit scalaire $\langle \cdot, \cdot \rangle_{H_0}$ en $H$, et toutes les propriétés sont gardées. \\
-		
-		Unicité : supposons $G$ un autre espace de Hilbert pour lequel $K$ est un noyau reproduisant. 
-		\begin{itemize}
-			\item[$\bullet$]
-			$(\subseteq)$ : \\
-			On a
-			\[\forall x, y \in X, \; \langle K_x, K_y \rangle_H = K(x, y) = \langle K_x, K_y \rangle_G\]
-			Par linéarité, $\langle \cdot, \cdot \rangle_H = \langle \cdot, \cdot \rangle_G$ sur tout $H_0$, i.e $H_0 \subseteq G$. Donc $H \subseteq G$ car $G$ est complet.
-			
-			\item[$\bullet$]
-			$(\supseteq)$ : \\
-			Soit $f \in G$. Comme $H$ est un sous-espace fermé de $G$, on peut écrire $f = f_{H} + f_{H^\perp}$ par le théorème de décomposition orthogonal. De plus comme $K$ est un noyau reproductif de $G$ et $H$ on a $\forall x \in X$ :
-			
-			\[f(x) = \langle K_x, f \rangle_G = \langle K_x, f_{H} \rangle_G + \langle K_x, f_{H^\perp} \rangle_G = \langle K_x, f_{H} \rangle_G = \langle K_x, f_{H} \rangle_H = f_H (x) \]
-			
-			Ainsi $f \in H$.
-		\end{itemize}	
-	\end{proof}
 
 	On a montré avec le le théorème \ref{th:link2visions} que si l'on a un RKHS $H$, alors il existe un unique noyau reproduisant $k$ pour $H$, celui-ci étant aussi un noyau par la propriété  \ref{prop:reprotokernel}. Et on a ensuite montré par le théorème \ref{th:mooaron} que si l'on a un noyau $k$, alors c'est un noyau reproduisant d'un RKHS $H$. Entre autre, on a montré l'équivalence entre plusieurs représentations pour un RKHS. \\
 	
-	Regardons quelques kernels classiques :
+	Quelques kernels classiques comme exemples :
 	\begin{itemize}
 		\item[$\bullet$] $k(x, y) \coloneqq \langle x, y \rangle$, son RKHS est $H = \{\langle \cdot, \beta \rangle : ||\langle \cdot, \beta \rangle||_H^2 = ||\beta||^2\}$
 		\item[$\bullet$] $k(x, y) \coloneqq (\alpha \langle x, y \rangle + 1)^d, \; \alpha \in \mathbb{R}, \; d \in \mathbb{N}$
@@ -225,7 +173,7 @@
 	
 	\subsection{Applications des RKHS en machine learning}
 	
-	Une application très importante des RKHS est le Representer theorem, un théorème qui permet de transformer des problèmes d'optimisation de dimension infinie en dimension finie, que l'on pourra alors résoudre avec les méthodes d'optimisation numérique. On verra son application avec le Kernel Ridge Regression et avec les SVM.
+	Une application très importante des RKHS est le theorem, un théorème qui permet de transformer des problèmes d'optimisation de dimension infinie en dimension finie, que l'on pourra alors résoudre avec les méthodes d'optimisation numérique. On verra son application avec le Kernel Ridge Regression et avec les SVM.
 	
 	\subsubsection{Representer theorem}
 	
@@ -239,24 +187,6 @@
 		
 		De plus, si $P$ est strictement croissante, alors toute solution a cette forme.
 	\end{theorem}
-	\begin{proof}
-		Soit $H_0$ le sous espace engendré par $\{k(\cdot, x_i ) : i \in 1, \cdots, n\}$. Comme $H_0 \in H$, $H_0$ est fermé car de dimension finie. Alors le théorème de décomposition orthogonale nous dit que : $\forall f \in H, \; f = f_{H_0} + f_{{H_0}^\perp}$. \\
-		
-		De plus, comme $k$ est un noyau reproductif de $H$, on a $\forall x_i$ :
-		
-		\[f(x_i) = \langle k(\cdot, x_i), f \rangle_H = \langle k(\cdot, x_i), f_{H_0} \rangle_H + \langle k(\cdot, x_i), f_{{H_0}^\perp} \rangle_H = \langle k(\cdot, x_i), f_{H_0} \rangle_H = f_{H_0} (x_i) \]
-		
-		Alors :
-		
-		\begin{align*}
-			J(f) &\coloneqq E(f(x_1), \cdots, f(x_n)) + P(||f||_H^2) \\
-			&= E(f_{H_0}(x_1), \cdots, f_{H_0}(x_n)) + P(||f||_H^2) \\
-			&\geq E(f_{H_0}(x_1), \cdots, f_{H_0}(x_n)) + P(||f_{H_0}||_H^2) \text{ par croissance de $P$ car $||f||_H^2 = ||f_{H_0}||_H^2 + ||f_{{H_0}^\perp}||_H^2$}\\
-			&= J(f_{H_0})
-		\end{align*}
-	
-		Donc si $f$ est un minimiseur de $J$, alors $f_{H_0} \coloneqq \sum_{i=1}^{n} \alpha_i \cdot k(\cdot, x_i)$ aussi. Si $P$ est strictement croissante, alors l'inégalité est stricte et si l'on veut un minimiseur de $J$ il faut nécessairement qu'il soit de cette forme.
-	\end{proof}
 
 	\subsubsection{Exemple 1 : Kernel Ridge Regression}
 	
@@ -315,8 +245,6 @@
 	
 	\section{Introduction : Réseau de neurone simple}
 	
-	{\bf INTRODUIRE LA NOTATION ASYMP POUR LES ORDRES DE GRANDEUR}
-	
 	Commencons par étudier un NN très simple : une fonction
 	$\Phi : (\mathbb{R}^m \times \mathbb{R}^{m \times m} \times \mathbb{R}^m) \times \mathbb{R} \to \mathbb{R}$ combinaison d'applications linéaires, sans non linéarités  intermédiaires  :
 	
@@ -326,65 +254,52 @@
 	On initialise $\theta^0 \coloneqq (\beta^0, A^0, u^0)$ de manière standarde : 
 	$ \forall i,j \in \{1, \cdots, m\} , \; u_i^0, A_{ij}^0, \beta_i^0 \sim_{iid} N(0, 1)$
 	
-	Nous montrerons quelques propriétés asymptotiques en la largeur des couches, et sur l'évolution des paramètres lors du premier pas de la descente de gradient.
+	Nous montrerons quelques propriétés asymptotiques en la largeur des couches, et sur l'évolution des paramètres lors du premier pas de la descente de gradient. De plus, on discutera des répercutions du choix de $\alpha$.
 	
 	\subsection{Lois suivant la largeur des couches $m$}
+	
+	Ci dessous on regarde les lois des paramètres et du réseau de neurone à l'initialisation, celà nous donne une vue d'ensemble et une manière de choisir $\alpha$ et $\gamma$ pour la normalisation.\\
 	
 	\begin{itemize}
 		
 		\item[$\bullet$] Loi de $ || u^0 ||_2^2$ pour $m$ grand \\
-		
-		Comme $ || u^0 ||_2^2 = \sum_{i=1}^{m} (u_i^0)^2 \sim \chi^2 (m)$ et $ u_i^0 \sim \chi^2 (1)$, en appliquant le TCL aux $ u_i^0 $, on a :
-		
-		\[
-			\frac{|| u^0 ||_2^2 - m}{\sqrt{2m}} \sim_{m \to \infty}  N(0, 1)
-		\]
 	
-		En particulier, $ || u^0 ||_2^2 \sim  m$  pour $m$ grand. \\
+		$ || u^0 ||_2^2 \sim  m$  pour $m$ grand. \\
 		
 		\item[$\bullet$] Loi de $ \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x $ sachant $ u^0 $ \\
 		
-		$ (A^0 u^0)_i = \sum_{j=1}^m A_{ij}^0 u_j^0$. En sachant $u^0$, comme 
-		$A_{i \cdot}^0$ est un vecteur gaussien, $(A^0 u^0)_i \sim  N(0, || u^0 ||_2^2 ) $. 
-	
-		De même, part indépendance des $A_{ij}^0$, les $(A^0 u^0)_i$ sont indépendants et (conditionnellement à $u_0$) $A^0 u^0 \sim N(0_m, || u^0 ||_2^2 \; Id_m)$.
-		
-		Ainsi, la loi de $ \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x $ sachant $ u^0$ est $N(0_m, \left( \frac{x}{m^{\gamma}} \right)^2 || u^0 ||_2^2 \; Id_m) $. \\
+		La loi de $ \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x $ sachant $ u^0$ est $N(0_m, \left( \frac{x}{m^{\gamma}} \right)^2 || u^0 ||_2^2 \; Id_m) $. \\
 	
 		\item[$\bullet$] Loi de $ \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x $ pour $m$ grand \\
 		
 		On aura besoin du lemme suivant :
-		
 		\[X_{n} \sim N(\mu_{n},\sigma_{n}) \text{ avec }  \mu_{n}\to\mu \text{ et } \sigma_{n} \to \sigma, \text{ alors } (X_{n}) \text{ converge en loi vers } X_{\infty} \sim N(\mu,\sigma) \]
 		
-		Regardons la variance de $ \left(\left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \right)_i$ sachant $ u^0 $ pour $m$ grand : on utilise $ || u^0 ||_2^2 \sim  m$ et elle est donc environ égale à $x^2 m^{1 - 2\gamma}$. Si $\gamma < 1/2$ cette variance diverge vers l'infini pour $m \to \infty$. Si $\gamma > 1/2$, elle tendra vers 0 pour $m \to \infty$ et sa loi sera constante égale à 0. Seul le choix $\gamma = 1/2$ permet de stabiliser la variance pour $m \to \infty$. Dans ce cas là, on applique le lemme : on a $ \left(\left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \right)_i$ sachant $ u^0 $ qui converge vers une $N(0, x^2)$. Comme cette loi est indépendante de $u^0$, on a donc que $ \left(\left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \right)_i$ converge en loi vers $N(0,x^2)$. \\
+		Regardons la variance de $ \left(\left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \right)_i$ sachant $ u^0 $ pour $m$ grand : on utilise $ || u^0 ||_2^2 \sim  m$ et elle est donc environ égale à $x^2 m^{1 - 2\gamma}$. Si $\gamma < 1/2$ cette variance diverge vers l'infini pour $m \to \infty$. Si $\gamma > 1/2$, elle tendra vers 0 pour $m \to \infty$ et sa loi sera constante égale à 0. Seul le choix $\gamma = 1/2$ permet de stabiliser la variance quand $m \to \infty$. Dans ce cas là, on applique le lemme : on a $ \left(\left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \right)_i$ sachant $ u^0 $ qui converge vers une $N(0, x^2)$. Comme cette loi est indépendante de $u^0$, on a donc que $ \left(\left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \right)_i$ converge en loi vers $N(0,x^2)$. \\
 		
-		\item[$\bullet$] Loi de $ || \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \; ||_2^2 $ pour $m$ grand
-		 \\
-		 
-		 On a $ \left( \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \right)_i \sim  N(0,x^2)$ pour $m$ grand.
-		
-		De plus, $ \left( \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \right)_i^2 \sim  
-		x^2 \cdot  \chi^2 (1) $. En appliquant la LGN, $||\left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \; ||_2^2 \sim m x^2$. \\
+		\item[$\bullet$] Loi de $ || \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \; ||_2^2 $ pour $m$ grand \\
 
-		\item[$\bullet$][$\bullet$] Loi de $ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 $ sachant $x_2$, avec 
+		$||\left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \; ||_2^2 \sim m x^2$. \\
+
+		\item[$\bullet$] Loi de $ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 $ sachant $x_2$, avec 
 		$x_2 = \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x$ \\
 		
 		On a 
 		$ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 | x_2 \sim N(0,  \frac{1}{m^{2\alpha}}||x_2||_2^2) $
 		\\
 		
-		\item[$\bullet$][$\bullet$] Loi de $ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 $ pour $m$ grand\\
+		\item[$\bullet$] Loi de $ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 $ pour $m$ grand\\
 		
-		On peut encore une fois de la même manière montrer que 
 		$ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 \sim N(0,  x^2 m^{1 - 2\alpha}) $
 		\\
+		
+		Le réseau de neurone reste centré à l'initialisation, on remarque de même que la variance reste constante que lorsque $\alpha = 1/2$. On impose ce choix là pour $\alpha$.
 		
 	\end{itemize}
 
 	\subsection{Gradients}
 	
-	Trivialement,
+	
 	
 	\[\nabla_{\beta} \Phi = \frac{x}{m^{\alpha + 1/2}} A u\]
 	
@@ -446,7 +361,7 @@
 	 	&\simeq m^a \cdot m^{1 - 2\alpha}
 	 \end{align*}	
 	
-	Ce qui impose le choix $a = 2\alpha - 1$ \\
+	Ce qui impose le choix $a = 2\alpha - 1$ pour que $\Delta F$ reste constant lorsque $m$ tend vers l'infini.\\
 	
 	\subsubsection{Ordres de grandeur des écarts relatifs}
 
@@ -474,23 +389,12 @@
 
 	\[\frac{|\Delta A_{ij}|}{|A_{ij}|} \sim m^{\alpha - 3/2}\]
 	
-	Maintenant avec la norme opétateur : le corollaire 7.9 du cours de MIA2 nous donne une majoration sur $|A^0|_{op}$ : $|A^0|_{op} \leq \sqrt{m} + 7\sqrt{m + \xi} = \mathcal( \sqrt{m})$, avec $\xi \sim Exp(1)$.
-	
-	De plus, on peut trouver la la norme opérateur de $\Delta A$ comme suit : tout le travail est de trouver $|\beta^0 (u^0)^T|_{op} \coloneqq \sup \{||\beta^0 (u^0)^T x|| \; 
-	\text{avec }||x|| = 1\}$.
-	
-	\begin{align}
-		(\beta^0 (u^0)^T)_{ij} &= \beta^0_i u^0_j \\
-		(\beta^0 (u^0)^T x)_i &= \sum_{j=1}^{m} (\beta^0 (u^0)^T)_{ij} \cdot x_j \\
-		&= \beta^0_i < u^0, x> \\
-		||\beta^0 (u^0)^T x|| &= |< u^0, x>| \cdot ||\beta^0||
-	\end{align}
-
-	Donc le $\sup$ est bien atteint en $x = u / ||u^0||$ et est égal à $||u^0|| \cdot ||\beta^0||$. En utilisant les approximations précédentes, on a donc $|\beta^0 (u^0)^T|_{op} \simeq m$. Ainsi on a $|\Delta A|_{op} \sim m^{2\alpha - 1} \cdot m^{-1/2 - \alpha} \cdot m \sim m^{\alpha - 1/2}.$ et :
-	
+	Maintenant avec la norme opérateur (voir annexe): 
 	\[\frac{|\Delta A|_{op}}{|A^0|_{op}} \sim m^{\alpha - 1}\]
 	
 	\subsubsection{Choix de $\alpha$}
+	
+	On va voir dans cette section que le choix de $\alpha$ est déterminant dans le comportement du réseau de neurone.\\
 	
 	\begin{itemize}
 		\item[$\bullet$] $\alpha < 1$ \\
@@ -502,30 +406,14 @@
 		\[||\Delta \beta|| \ll ||\beta^0||\]
 		
 		\[|\Delta A|_{op} \ll |A^0|_{op}\]
-
-		Regardons maintenant les $\Delta$ des gradients en $u$ pour la première itération :
 		
-		\begin{align}
-			\Delta \nabla_u \Phi &\coloneqq \nabla_u \Phi (\theta^1, x) -  \nabla_u \Phi (\theta^0, x) \\
-			&\sim m^{-\alpha - 1/2} \underbrace{((\beta^1)^T A^1 - (\beta^0)^T A^0)}_\text{($\star$)} \\
-			 (\star) &= (\beta^0 - \eta \nabla_{\beta} F(\Phi(\theta^0, x)))^T (A^0 - \eta \nabla_{A} F(\Phi(\theta^0, x))) - (\beta^0)^T A^0 \\
-			&= \eta^2 [\nabla_{\beta} F(\Phi)]^T[\nabla_{A} F(\Phi)] - \eta [\nabla_{\beta} F(\Phi)] A^0 - \eta \beta^0 [\nabla_{A} F(\Phi)] \\
-			&= (\Delta \beta)^T(\Delta A) + (\Delta \beta) A^0 + \beta^0 (\Delta A)
-		\end{align}
-	
-	Donc :
-	
-	\begin{align}
-		||\Delta \nabla_u \Phi|| &\sim m^{-\alpha - 1/2} ||(\Delta \beta)^T(\Delta A) + (\Delta \beta) A^0 +  \beta^0 (\Delta A)|| \\
-		&\lesssim m^{-\alpha - 1/2} (||\Delta \beta|| \cdot |\Delta A|_{op} + ||\Delta \beta|| \cdot |A^0|_{op} + ||\beta^0|| \cdot |\Delta A|_{op}) \\
-		&\lesssim m^{-\alpha - 1/2} (m^{\alpha - 1/2}m^{\alpha - 1/2} + m^{\alpha - 1/2}m^{1/2} + m^{1/2}m^{\alpha - 1/2}) \\
-		&\lesssim m^{-\alpha - 1/2} (m^{\alpha - 1/2}m^{1/2} + m^{\alpha - 1/2}m^{1/2} + m^{1/2}m^{\alpha - 1/2}) \\
-		&\lesssim m^{-1/2}
-	\end{align}
+		Le premier pas de descente de gradient n'a pas significativement fait bougé nos paramètres de l'initialisation.
 
-	C'est-à-dire que $||\Delta \nabla_u \Phi|| = \mathcal{O}(m^{-1/2})$ pour $m$ grand. \\
+		Regardons maintenant les $\Delta$ des gradients pour la première itération :\\
+
+	On peut montrer que (voir annexe) $||\Delta \nabla_u \Phi|| = \mathcal{O}(m^{-1/2})$ pour $m$ grand. \\
 	
-	Par la même démarche on trouve $||\Delta \nabla_{\beta} \Phi|| = \mathcal{O}(m^{-1/2})$ et $||\Delta \nabla_{A} \Phi||_F = \mathcal{O}(m^{-1/2})$ pour $m$ grand. \\
+	De même, $||\Delta \nabla_{\beta} \Phi|| = \mathcal{O}(m^{-1/2})$ et $||\Delta \nabla_{A} \Phi||_F = \mathcal{O}(m^{-1/2})$ pour $m$ grand. \\
 	
 	Ainsi :
 	
@@ -541,14 +429,11 @@
 
 	\[||\Delta \nabla_{\beta / u / A} F(\Phi) || = \mathcal{O}(m^{-1/2}) \stackrel{\alpha < 1}{\ll} m^{1/2 - \alpha} \sim ||\nabla_{\beta / u / A} F(\Phi)||\]
 
-	Ainsi, lorsqu'on fait un pas de gradient, la variation du gradient est quasiment nulle. On utilise alors à l'approximation $\nabla_{\beta / u / A} F(\Phi(\theta^1,x)) \simeq \nabla_{\beta / u / A} F(\Phi(\theta^0,x))$. On peut alors réutiliser les calculs pour l'étape suivante et ainsi de suite. On finit donc par avoir l'approximation $\nabla_{\beta / u / A} F(\Phi(\theta^t,x)) \simeq \nabla_{\beta / u / A} F(\Phi(\theta^0,x))$ après $t$ pas de gradient.
+	Ainsi, lorsqu'on fait un pas de gradient, la variation du gradient est quasiment nulle. On utilise alors l'approximation $\nabla_{\beta / u / A} F(\Phi(\theta^1,x)) \simeq \nabla_{\beta / u / A} F(\Phi(\theta^0,x))$. On peut alors réutiliser les calculs pour l'étape suivante et ainsi de suite. On finit donc par avoir l'approximation $\nabla_{\beta / u / A} F(\Phi(\theta^t,x)) \simeq \nabla_{\beta / u / A} F(\Phi(\theta^0,x))$ après $t$ pas de gradient. \\
 	
-	\begin{align*}
-		F(\Phi(\theta^{t+1}, x)) - F(\Phi(\theta^t, x))&= \langle \theta^{t+1}-\theta^t , \nabla_{\theta} F(\Phi(\theta^t, x))  \rangle  + \mathcal{O}(m^{-1/2}) \\
-		\Longrightarrow \sum_{t=0}^{T-1} F(\Phi(\theta^{t+1}, x)) - F(\Phi(\theta^t, x)) &= \sum_{t=0}^{T-1} \langle \theta^{t+1}-\theta^t , \nabla_{\theta} F(\Phi(\theta^t, x))  \rangle  + \mathcal{O}(m^{-1/2}) \\
-		\Longleftrightarrow F(\Phi(\theta^{T}, x)) - F(\Phi(\theta^{0}, x)) &= \sum_{t=0}^{T-1} \langle \theta^{t+1}-\theta^t , \nabla_{\theta} F(\Phi(\theta^0, x))  \rangle  + \mathcal{O}(m^{-1/2}) \\
-		\Longleftrightarrow	F(\Phi(\theta^{T}, x)) &= F(\Phi(\theta^{0}, x)) + \langle \theta^{T}-\theta^0 , \nabla_{\theta} F(\Phi(\theta^0, x))  \rangle  + \mathcal{O}(m^{-1/2})
-	\end{align*}
+	On peut aussi montrer que 
+
+\[ F(\Phi(\theta^{T}, x)) = F(\Phi(\theta^{0}, x)) + \langle \theta^{T}-\theta^0 , \nabla_{\theta} F(\Phi(\theta^0, x))  \rangle  + \mathcal{O}(m^{-1/2}) \]
 
 	On apprend donc un modèle linéaire relatif aux features $\nabla_{\theta} F(\Phi(\theta^0, x))$, c'est-à-dire qu'après la transformation $x \rightarrow \nabla_{\theta} F(\Phi(\theta^0, x))$, on est linéaire. On fait donc face à un RKHS de noyau (par définition) $$k(x,y)=\langle\nabla_{\theta} F(\Phi(\theta^0, x)),\nabla_{\theta} F(\Phi(\theta^0, y))\rangle \stackrel{LGN}{\longrightarrow} \mathbb{E}[\langle\nabla_{\theta} F(\Phi(\theta^0, x)),\nabla_{\theta} F(\Phi(\theta^0, y))\rangle] \; \forall x,y \in \mathbb{R}$$
 	
@@ -558,10 +443,13 @@
 
 	Dans ce cas là, comme vu plus haut, les variations relatives des paramètres ne sont plus négligeable pour $m$ grand, et on observe plus de RKHS, il y a bien feature learning.
 	
+	\subsection{Conclusion}
 	
-	Ici on a fait le calcul dans le cas le plus simple possible pour voir apparaitre le ph\'enom\`ene. Dans la suite on va: voir que le calcul reste valable pour $\sigma(x)\neq x$ et $x\in R^d$. Puis on d\'erivera proprement le r\'esultat. 
+	Ici on a fait le calcul dans le cas le plus simple possible pour voir apparaître le phénomène de linéarité asymptotique. Ce n'est pas contre intuitif pour le moment car le réseau de neurone est linéaire. Mais ci-dessous, on retrouve les mêmes résultats pour un réseau de neurone non linéaire (i.e un réseau de neurone utile), on ne s'y attend pas forcément.
 		
 	\end{itemize}
+
+\newpage
 
 	\section{Généralisation à un cas particulier}
 	
@@ -577,38 +465,11 @@
 	
 	Soit $\phi : \mathbb{R} \to \mathbb{R}$ et \[g(u) \coloneqq \frac{1}{m} \sum_{j=1}^{m} \phi(u_j)\] On suppose l'initialisation gaussienne : $u_j^0 \sim_{iid} N(0,1)$. \\
 	
-	Etudions le comportement de $f(u) \coloneqq \sqrt{m} g(u)$ autour de $u_j^0$ pour $m$ grand.
+	Etudions le comportement de $f(u) \coloneqq \sqrt{m} g(u)$ autour de $u_j^0$ pour $m$ grand :
 	
-	\[\frac{\partial g(u)}{\partial u_j} = \frac{1}{m} \phi '(u_j)\]
-	
-	\begin{align}
-		||\nabla g(u) ||^2 &= \frac{1}{m^2} \sum_{j=1}^{m} (\phi '(u_j))^2 \\
-		&\simeq \frac{1}{m} \mathbb{E}((\phi '(u_j))^2) \text{ pour $m$ grand par la LGN}
-	\end{align}
-
-	$||D^2 g(u)||_{op} = \sup \{||D^2 g(u) \, x|| \text{ avec } ||x|| = 1\}$
-	
-	\begin{align}
-		(D^2 g(u) \, x)_i &= \sum_{j=1}^{m} (D^2 g(u) \, x)_{ij} \, x_j \\
-		&= \sum_{j=1}^{m} \frac{\partial g(u)}{\partial u_i \partial u_j} \, x_j \\
-		&= \frac{1}{m} \phi ''(u_i) \, x_i \text{ car la dérivée seconde est nulle si $i \neq j$}
-	\end{align}
-	
-	Donc
-	
-	\begin{align*}
-		||D^2 g(u) \, x||^2 &= \frac{1}{m^2} \sum_{j=1}^{m} x_i^2 (\phi ''(u_i))^2 \\
-		&\leq \frac{1}{m^2} \sup_i (\phi ''(u_i))^2 \sum_{j=1}^{m} x_i^2 \\
-		&= \frac{1}{m^2} \sup_i (\phi ''(u_i))^2 \text{ car $||x|| = 1$} \\
-		&= \frac{1}{m^2} (\sup_i |\phi ''(u_i)|)^2 \\
-		&= \frac{1}{m^2} (|\phi ''|_{\infty})^2
-	\end{align*}
-	
-	Ainsi, \[||D^2 g(u) \, x||_{op} = \frac{|\phi ''|_{\infty}}{m}\]
+	On peut montrer (voir annexe) que \[||\nabla g(u) ||^2 \simeq \frac{1}{m} \mathbb{E}((\phi '(u_j))^2)\] et que \[||D^2 g(u)||_{op} \leq \frac{|\phi ''|_{\infty}}{m}\]
 	
 	On peut à présent regarder le comportement pour pour $m$ grand de $f(u) \coloneqq \sqrt m g(u)$. Pour tout $h$, on a :
-	
-	\[f(u^0 + h) = f(u^0) + \sqrt m \left(\langle \nabla g(u), h \rangle + \mathcal{O}\left(\frac{||h||^2}{m}\right) \right) =  f(u^0) + \sqrt m ||\nabla g(u)|| \left \langle \frac{\nabla g(u)}{||\nabla g(u)||}, h \right \rangle  + \mathcal{O}\left(\frac{||h||^2}{\sqrt m}\right) \]
 	
 	\begin{align*}
 		f(u^0 + h) &= f(u^0) + \sqrt m \left(\langle \nabla g(u), h \rangle + \mathcal{O}\left(\frac{||h||^2}{m}\right) \right) \\
@@ -620,111 +481,22 @@
 	
 	\subsection{Cas général}
 	
-	Maintenant, considérons $\phi : \mathbb{R}^d \to \mathbb{R}$. On aura besoin de la propriété suivante, qui nous permettra d'approximer pour $m$ grand la norme opérateur de $D g(u)$ par une espérance.
+	Maintenant, considérons $\phi : \mathbb{R}^d \to \mathbb{R}$. On va montrer le même résultat pour cette fonction $\phi$ multivariée.
 	
 	\subsubsection{Dérivées premières}
 	
-	\begin{property}
-		Pour toute matrice réelle $A$, $||A||_{op}^2 = ||A^T A||_{op}$, et $||A||_{op} = ||A^T||_{op}$.
-	\end{property}
-	\begin{proof}
-		Soit $v$ le vecteur pour lequel le suprémum est atteint dans la définition de $||A||_{op}$ :
-		\begin{align*}
-			||A||_{op}^2 = ||Av||^2 &= \langle Av, Av \rangle \\
-			&= \langle A^T Av, v \rangle \\
-			&\leq ||A^T Av|| \cdot ||v|| \text{ par CS}\\
-			&= ||A^T A||_{op} \cdot ||v|| \text{ par définition de $||\cdot||_{op}$ et car $||v|| = 1$}\\
-			&= ||A^T A||_{op} \\
-			&\leq ||A^T||_{op} ||A||_{op} \text{ car $||\cdot||_{op}$ est sous-multiplicative}
-		\end{align*}
-		
-		Alors $||A||_{op} \leq ||A^T||_{op}$. En substituant $A^T$ à $A$, on a aussi $||A^T||_{op} \leq ||A||_{op}$ et donc $||A^T||_{op} ||A||_{op} \leq ||A||_{op}^2$. On a encadré $||A^T A||_{op}$ par $||A||_{op}^2$ ce qui conclue la preuve.
-	\end{proof}
-
-	En appliquant cette propriété, $||Dg(u)||_{op} = ||Dg(u)Dg(u)^T||_{op}^{1/2}$.
-	
-	\begin{align*}
-		Dg(u) &=
-		\begin{bmatrix}
-			D_{u_1}g(u) & \cdots & D_{u_m}g(u)
-		\end{bmatrix} \in \mathbb{R}^{n \times (d\cdot m)}\\
-		&= \frac{1}{m} \begin{bmatrix}
-			D \phi(u_1) & \cdots & D \phi(u_m)
-		\end{bmatrix}
-	\end{align*}
-
-	\[ 
-	Dg(u) Dg(u)^T =
-	\begin{bmatrix}
-		D_{u_1}g(u) & \cdots & D_{u_m}g(u)
-	\end{bmatrix}
-	\begin{bmatrix}
-		D_{u_1}g(u)^T \\
-		 \vdots \\
-		  D_{u_m}g(u)^T
-	\end{bmatrix}
-	= \frac{1}{m^2} \sum_{j=1}^{m} D \phi(u_j) D \phi(u_m)^T
-	\]
-	
-	Asymptotiquement en le nombre $m$ de couche, on a par la LGN :
-	
-	\[Dg(u^0) Dg(u^0)^T \simeq \frac{1}{m} \mathbb{E}(D \phi(u^0_j) D \phi(u^0_j)^T)\]
-	
-	Par continuité, on a pour $m$ grand :
-	
-	\[||Dg(u^0) Dg(u^0)^T||_{op} \simeq \frac{1}{\sqrt{m}} ||\mathbb{E}(D \phi(u^0_j) D \phi(u^0_j)^T)||_{op}^{1/2}\]
+	\[||Dg(u)||_{op} = ||Dg(u)Dg(u)^T||_{op}^{1/2} \simeq \frac{1}{\sqrt{m}} ||\mathbb{E}(D \phi(u^0_j) D \phi(u^0_j)^T)||_{op}^{1/2}\]
 	
 	\subsubsection{Dérivées secondes}
 	
-	\[\frac{\partial^2 g(u)}{\partial u_{jk} \partial u_{j'k'}} = \frac{1}{m} \frac{\partial^2 \phi (u_j)}{\partial u_{jk} \partial u_{j'k'}} {\bf 1}_{j = j'} \]
+	\[||D^2 g(u)||_{op} \leq \frac{1}{m} \max_{j=1\cdots m} ||D^2 \phi (u_j)||_{op}\]
 	
-	$D^2 g(u)$ est de dimension $(d\cdot m) \times (d\cdot m)$, et est une matrice diagonale par blocs de dimension $d\cdot d$, dont la diagonale est composée des $\frac{1}{m} D^2 \phi (u_j)$. \\
-
-	\begin{property}
-		Pour toute matrice réelle symétrique, $||A||_{op} = \sup_{||x|| \leq 1} |x^T A x|$
-	\end{property}
-	\begin{proof}
-		En diagonalisant $A$ en $QDQ^T$ :
-		\begin{itemize}
-			\item[$\bullet$]
-			\begin{align*}
-				\sup_{||x|| \leq 1} |x^T A x| &= \sup_{||x|| \leq 1} |x^T QDQ^T x| \\
-				&= \sup_{||y|| \leq 1} |y^T Dy| \text{ en posant $y \coloneqq Q^T x$ car $Q$ est orthogonale.}  \\
-				&= \sup_{||y|| \leq 1} \left | \sum_{k} y_k^2 \lambda_k \right | \\
-				&= |\lambda_{min}| \lor |\lambda_{max}| \text{ en mettant tout le poids sur la valeur propre la plus extrême.}
-			\end{align*}
-			
-			\item[$\bullet$]
-			\begin{align*}
-				||A||_{op}^2 &\coloneqq \sup_{||x|| \leq 1} ||Ax||_2^2 \\
-				&= \sup_{||x|| \leq 1} x^T A^T A x \\
-				&= \sup_{||y|| \leq 1} y^T D^2 y \\
-				&= \sup_{||y|| \leq 1} \left | \sum_{k} y_k^2 \lambda_k^2 \right | \\
-				&= (\lambda_{min})^2 \lor (\lambda_{max})^2 \text{ par le même argument que ci-dessus}
-			\end{align*}
-			
-			En prenant la racine carrée, on retrouve bien le résultat souhaité.
-		\end{itemize}
-		
-	\end{proof}
-	
-	Ainsi :
-	
-	\begin{align*}
-		||D^2 g(u)||_{op} &= \sup_{||x|| \leq 1} |x^T D^2 g(u) x| \\
-		&= \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \frac{1}{m} \left | \sum_{j=1}^{m} x_j^T D^2 \phi (u_j) x_j \right | \text{ en effectuant un calcul par bloc.} \\
-		&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \sum_{j=1}^{m} \left | x_j^T D^2 \phi (u_j) x_j \right | \\
-		&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \sum_{j=1}^{m} \left | x_j^T D^2 \phi (u_j) x_j \right | \\
-		&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \sum_{j=1}^{m} ||D^2 \phi (u_j) x_j|| \cdot ||x_j|| \text{ par CS} \\
-		&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \sum_{j=1}^{m} ||D^2 \phi (u_j)||_{op} \cdot ||x_j||^2 \text{ par définition de $||\cdot||_{op}$} \\
-		&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \max_{j=1\cdots m} ||D^2 \phi (u_j)||_{op} \sum_{j=1}^{m} ||x_j||^2 \\
-		&\leq \frac{1}{m} \max_{j=1\cdots m} ||D^2 \phi (u_j)||_{op}
-	\end{align*}
+	\subsubsection{Conclusion}
 
 	On peut donc regarder comme précédemment le comportement pour pour $m$ grand de $f(u) \coloneqq \sqrt m g(u)$. Pour tout $h$, on a :
 	
-	\[ f(u^0 + h) \stackrel{m \to \infty}{\simeq} f(u^0) + ||\mathbb{E}(D \phi(u^0_j) D \phi(u^0_j)^T)||_{op}^{1/2} \langle V_u, h \rangle + \mathcal{O}\left(\frac{||h||^2}{\sqrt m}\right) \text{ avec $V_u \coloneqq \frac{D g(u)}{||D g(u)||_{op}}$ de norme op 1.} \]
-	
+	\[ f(u^0 + h) \stackrel{m \to \infty}{\simeq} f(u^0) + ||\mathbb{E}(D \phi(u^0_j) D \phi(u^0_j)^T)||_{op}^{1/2} \langle V_u, h \rangle + \mathcal{O}\left(\frac{||h||^2}{\sqrt m}\right) \text{ avec $V_u \coloneqq \frac{D g(u)}{||D g(u)||_{op}}$ de norme 1} \]
+		
 	On voit donc que notre réseau de neurone se comporte encore une fois linéairement pour $m$ grand. \\
 
 	\subsection{Application}
@@ -733,13 +505,15 @@
 	
 	\[ \frac{1}{\sqrt{m}} \sum_{j=1}^{m} a_j \cdot \sigma (\langle {\bf b_j}, x \rangle) \]
 	
-	Ici $\phi (u_j) = a_j \cdot \sigma (\langle {\bf b_j}, x \rangle)$. \\
+	Ici, on a juste à prendre $\phi (u_j) = a_j \cdot \sigma (\langle {\bf b_j}, x \rangle)$. \\
 	
-	Le réseau de neurone se comporte donc linéairement lorsque $m$ tend vers l'infini.
+	Le réseau de neurone se comporte donc linéairement lorsque $m$ tend vers l'infini. On a donc montré que le réseau de neurone non-linéaire se comporte asymptotiquement en le nombre de couches linéairement, un résultat surprenant : il n'y a donc pas de feature learning (on ne dépend que de l'initialisation) et on fait encore face à une RKHS.
 	
 	\newpage
 	
 	\section{Résultats récents}
+	
+	On regarde dans cette partie les résultats d'une publication de Lénaïc Chizat, Edouard Oyallon, et Francis Bach : "On Lazy Training in Differentiable Programming" \cite{chizat}. Cette publication donne des résultats sur le comportement après un nombre fini de pas de gradient de modèles lisses ainsi que de leurs paramètres. On voit alors que lorsqu'on normalise d'une certaine manière, le modèle lisse se comporte comme son modèle linéarisé (que l'on définit ci-dessous) et que les paramètres restent proches de l'initialisation.
 	
 	\subsection{Cadre}
 	
@@ -765,56 +539,405 @@
 			\item[$\bullet$] $\sup_{t \in [0, T]} ||\alpha h(w_{\alpha}(t)) - \alpha \bar{h}(\bar{w}_{\alpha}(t))|| = \mathcal{O}(1 / \alpha)$
 		\end{itemize}
 	\end{theorem}
-	\begin{proof}
-		 Soient $y(t) \coloneqq \alpha h(w_{\alpha}(t))$ et $\bar{y}(t) \coloneqq \alpha \bar{h}(\bar{w}_{\alpha}(t))$. On a donc 
-		 \begin{align*}
-		 	y'(t) &= \alpha Dh(w_{\alpha}(t)) \cdot - \frac{1}{\alpha} Dh (w_{\alpha}(t))^T \nabla R (y(t)) \\
-		 	&= - Dh(w_{\alpha}(t)) Dh (w_{\alpha}(t))^T \nabla R(y(t)) \\
-	 		\bar{y}'(t) &= \alpha Dh(w_0) \cdot - \frac{1}{\alpha} Dh (w_0)^T \nabla R(\bar{y}(t)) \\
-	 		&= - Dh(w_0)Dh (w_0)^T \nabla R (\bar{y}(t))
-		 \end{align*}
-	 
-		On pose $\Sigma (w) \coloneqq Dh(w) \cdot Dh (w)^T$ pour simplifier les calculs. On a de même $y(0) = \bar{y}(0) = \alpha h(w_0) = 0$.
-		
-		Posons $C$ une constante, pouvant changer suivant les lignes, indépendante de $\alpha$.
-		
-		\[\int_0^T ||w_{\alpha}'(t)|| dt = \int_0^T ||\nabla F(w_{\alpha}(t))|| dt \stackrel{C.S}{\leq} \sqrt{T} \left( \int_0^T ||\nabla F(w_{\alpha}(t))||^2 dt \right)^{1/2} \] \\
-	 	
-	 	Or $\frac{d}{dt} F(w_{\alpha}(t)) = \nabla F(w_{\alpha}(t)) \cdot w_{\alpha}'(t) = -||\nabla F(w_{\alpha}(t))||^2$. \\
-	 	
-	 	On en déduit :
-	 	
-	 	\[\sup_{t \in [0, T]} ||w_{\alpha}(t) - w_0|| = \norm{\int_0^{t_{sup}} w_{\alpha}'(t) dt}  \leq \int_0^{t_{sup}} ||w_{\alpha}'(t)|| dt \leq (t_{sup} \cdot F_{\alpha}(w_{\alpha}(0)))^{1/2} \lesssim C / \alpha\]
-	 	
-	 	et que $\sup_{t \in [0, T]} ||y(t) - y(0)|| \leq C$ et $\sup_{t \in [0, T]} ||\nabla R(y(t))|| \leq C$. On a retrouvé le premier résultat. \\
-	 	
-	 	Posons $\Delta (t) \coloneqq ||y(t) - \bar{y}(t)||_{\mathcal{F}}$. On a $\Delta(0) = 0$ et $\Delta '(t) = \langle \frac{y(t) - \bar{y}(t)}{||y(t) - \bar{y}(t)||_{\mathcal{F}}}, y'(t) - \bar{y}'(t) \rangle$. Et par C-S :
-	 	
-	 	\begin{align*}
-	 		\Delta ' (t) &\leq ||\Sigma(w_{\alpha}(t)) \nabla R (y(t)) - \Sigma(w_0) \nabla R (\bar{y}(t))||_{\mathcal{F}}\\
-	 		&= ||(\Sigma(w_{\alpha}(t)) - \Sigma(w_0)) \nabla R (y(t)) + \Sigma(w_0) (\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{\mathcal{F}} \\ 
-	 		&\stackrel{I.T}{\leq} ||(\Sigma(w_{\alpha}(t)) - \Sigma(w_0)) \nabla R (y(t))||_{\mathcal{F}} + ||\Sigma(w_0) (\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{\mathcal{F}} \\
-	 		&\leq ||\Sigma(w_{\alpha}(t)) - \Sigma(w_0)||_{op} \cdot || \nabla R (y(t))||_{\mathcal{F}} + ||\Sigma(w_0)||_{op}\cdot||\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{\mathcal{F}} \\
-	 		&\leq C_1 / \alpha + C_2 \cdot \Delta(t)
-	 	\end{align*}
- 	
- 		Or l'équation différentielle $u'(t) =  C_1 / \alpha + C_2 \cdot u(t)$ avec $u(0) = 0$ a une unique solution qui est $u(t) = \frac{C_1}{\alpha C_2} (\exp(C_2 t) - 1)$. Donc d'après le théorème de Petrovitsch, $\Delta(t) \leq \frac{C_1}{\alpha C_2} (\exp(C_2 t) - 1) \leq C / \alpha$. D'où le troisième résultat. \\
- 		
- 		Maintenant posons $\delta(t) \coloneqq ||w_{\alpha}(t) - \bar{w}_{\alpha}(t)||$.  $\delta '(t) = \langle \frac{w_{\alpha}(t) - \bar{w}_{\alpha}(t)}{||w_{\alpha}(t) - \bar{w}_{\alpha}(t)||}, w_{\alpha}'(t) - \bar{w}_{\alpha}'(t) \rangle$. Et par C-S :
- 		
- 		\begin{align*}
- 			\delta ' (t) &\leq \alpha^{-1} ||Dh (w_{\alpha}(t))^T \nabla R (y(t)) - Dh (w_0)^T \nabla R (\bar{y}(t))|| \\
- 			&= \alpha^{-1} ||(Dh (w_{\alpha}(t))^T - Dh (w_0)^T)\nabla R (y(t)) + Dh (w_0)^T (\nabla R (y(t)) - \nabla R (\bar{y}(t)))|| \\
- 			&\leq \alpha^{-1} ||Dh (w_{\alpha}(t))^T - Dh (w_0)^T||_{op}\cdot||\nabla R (y(t))||_{\mathcal{F}} + \alpha^{-1} ||Dh (w_0)^T||_{op} \cdot ||\nabla R (y(t)) - \nabla R (\bar{y}(t))|| _{\mathcal{F}}\\
- 			&\leq C / \alpha^2 + C / \alpha^2
- 		\end{align*}
- 	
- 		En intégrant par rapport à $t$, on retrouve le deuxième résultat. 
-	 
-	\end{proof}
+	
 	
 	\subsection{Interprétation}
 	
-	Ce qu'il se passe, c'est qu'on a le même genre de résultats que précédemment mais pour n'importequel modèle lisse : en prenant un paramètre de normalisation $\alpha$ (par exemple la largeur des couches d'un NN), on se retrouve dans une situation où après un nombre fini de pas de gradients, on est toujours proche de l'initialisation, et encore plus du modèle linéarisé. La sortie régularisée de ce modèle est aussi proche de celle du modèle linéarisé : on se comporte pour $\alpha$ grand de la même manière qu'un modèle linéaire.
+	Ce qu'il se passe, c'est qu'on a le même genre de résultats que précédemment mais pour n'importe quel modèle lisse : en prenant un paramètre de normalisation $\alpha$ (par exemple la largeur des couches d'un NN), on se retrouve dans une situation où après un nombre fini de pas de gradients, on est toujours proche de l'initialisation, et encore plus du modèle linéarisé. La sortie régularisée de ce modèle est aussi proche de celle du modèle linéarisé : on se comporte pour $\alpha$ grand de la même manière qu'un modèle linéaire.
+	
+	\section{Conclusion}
+	
+	Dans ce TER, on a présenté le cadre théorique des RKHS, on a mis en évidence des comportements linéaires asymptotiques de fonctions qui ne le sont pas forcément, et on a fait le lien entre la théorie des RKHS et les réseaux de neurones. Il reste plusieurs pistes intéressantes à explorer à présent concernant les réseaux de neurones: avons-nous des résultats concernant la convergence vers des minimums globaux de fonctions de perte ? Si oui avons-nous des résultats sur cette vitesse de convergence ? Ces questions sont répondues dans l'article de M. Chizat \cite{chizat}, et j'aurais volontier traité ces questions avec plus de temps.
+	
+	\newpage
+	
+	\section{Annexe : Preuves}
+
+	\subsection{Théorème : Existence et unicité du noyau reproduisant}
+	
+	Si $H$ est un RKHS, alors il existe un unique noyau reproduisant de $H$.
+	
+	\begin{proof}
+		Montrons l'existence puis l'unicité : \\
+		\begin{itemize} 
+			\item[$\bullet$]
+			On applique le théorème de Riesz à $L_x$ :
+			\[\forall x \in X, \; \exists ! \, k_x \in H, \; \forall f \in H, \; f(x) = L_x (f) = \langle f, k_x \rangle_H\]
+			Soit $k(y, x) \coloneqq k_x(y) \; \forall x,y \in X$, alors $\forall x \in X, \, f \in H, \; k(\cdot, x) \in H$ et  $f(x) = \langle f, k(\cdot, x) \rangle_H$.
+			
+			Donc $k$ est un noyau reproduisant de $H$.
+			
+			\item[$\bullet$]
+			Soient $k_1$ et $k_2$ deux noyau reproduisant de $H$. Alors $\forall x \in X, \, f \in H$
+			\[\langle f, k_1(\cdot, x) - k_2(\cdot, x) \rangle_H = f(x) - f(x) = 0\]
+			En prenant $f = k_1(\cdot, x) - k_2(\cdot, x)$, on a :
+			\[\left|\left| k_1(\cdot, x) - k_2(\cdot, x) \right|\right|_H^2 = 0\]
+			C'est-à-dire que $k_1 = k_2$ : le noyau reproduisant de $H$ est unique.
+		\end{itemize}
+	\end{proof}
+
+\subsection{Théorème : Moore-Aronszajn}
+
+Soit K un kernel. Alors il existe un unique espace de Hilbert $H$ de fonctions sur $X$ pour lequel $K$ est un noyau reproduisant.
+
+\begin{proof}
+	$\forall x \in X$, on pose $K_x(\cdot) \coloneqq K(x, \cdot)$. Soit $H_0$ le sous-espace vectoriel engendré par \\ $\{K_x : x \in X\}$. Sous couvert d'existence de $H$, la reproducing property de $K$ nous assure que $\forall x, y \in X, \; K(x, y) = \langle K_x, K_y \rangle_H$. On a de même :
+	\[\left\langle \sum_{i=1}^{n} a_i K_{x_i}, \sum_{j=1}^{m} b_j K_{x_j} \right\rangle_H = \sum_{i=1}^{n} \sum_{j=1}^{m} a_i b_j K(x_i, x_j)\]
+	
+	Il est alors naturel de définir pour toutes fonctions de $H_0$ : $f \coloneqq \sum_{i=1}^n a_i K_{x_i}$ et $g \coloneqq \sum_{j=1}^m b_i K_{y_j}$ 
+	\[\langle f, g \rangle_{H_0} \coloneqq \sum_{i=1}^{n} \sum_{j=1}^{m} a_i b_j K(x_i, y_j) = \sum_{i=1}^n a_i g(x_i) = \sum_{j=1}^m b_j f(y_j)\]
+	
+	Les deux dernières égalités nous assure que $\langle \cdot, \cdot \rangle_{H_0}$ est bien défini. De plus, il est billinéaire, symétrique et positif, et on a la reproducing property :
+	
+	\[\forall x \in X, \; f \in H_0, \; \langle f, K_x \rangle_{H_0} = \sum_{i=1}^n a_i K_x(x_i) = \sum_{i=1}^n a_i K_{x_i}(x) = f(x)\]
+	
+	Il reste à montrer que $||f||_{H_0} = 0 \Rightarrow f = 0$ pour que ca soit un produit scalaire : (on utilise CS pour les semi produits scalaires)
+	
+	\[|f(x)| = |\langle f, K_x \rangle_{H_0}| \leq ||f||_{H_0} ||K_x||_{H_0} = ||f||_{H_0} \sqrt{K(x,x)} \]
+	
+	Donc $\langle \cdot, \cdot \rangle_{H_0}$ est un produit scalaire. \\
+	
+	On complète $H_0$ avec le produit scalaire $\langle \cdot, \cdot \rangle_{H_0}$ en $H$ (on s'épargnera la longue preuve), et toutes les propriétés sont gardées. \\
+	
+	Unicité : supposons $G$ un autre espace de Hilbert pour lequel $K$ est un noyau reproduisant. 
+	\begin{itemize}
+		\item[$\bullet$]
+		$(\subseteq)$ : \\
+		On a
+		\[\forall x, y \in X, \; \langle K_x, K_y \rangle_H = K(x, y) = \langle K_x, K_y \rangle_G\]
+		Par linéarité, $\langle \cdot, \cdot \rangle_H = \langle \cdot, \cdot \rangle_G$ sur tout $H_0$, i.e $H_0 \subseteq G$. Donc $H \subseteq G$ car $G$ est complet.
+		
+		\item[$\bullet$]
+		$(\supseteq)$ : \\
+		Soit $f \in G$. Comme $H$ est un sous-espace fermé de $G$, on peut écrire $f = f_{H} + f_{H^\perp}$ par le théorème de décomposition orthogonal. De plus comme $K$ est un noyau reproductif de $G$ et $H$ on a $\forall x \in X$ :
+		
+		\[f(x) = \langle K_x, f \rangle_G = \langle K_x, f_{H} \rangle_G + \langle K_x, f_{H^\perp} \rangle_G = \langle K_x, f_{H} \rangle_G = \langle K_x, f_{H} \rangle_H = f_H (x) \]
+		
+		Ainsi $f \in H$.
+	\end{itemize}	
+\end{proof}
+	
+\subsubsection{Representer theorem}
+
+	La preuve ci-dessous est tirée de \cite{eecs}.
+	Soit $k$ un kernel sur $X$ et soit $H$ son RKHS associée. Posons $x_1, \cdots, x_n \in X$ notre training sample. Regardons le problème d'optimisation suivant :
+	
+	\[\min_{f \in H} \; J(f) \coloneqq E(f(x_1), \cdots, f(x_n)) + P(||f||_H^2)\]
+	Où $P$ est une fonction croissante. \\
+	
+	Alors si ce problème d'optimisation a (au-moins) une solution, il y a (au-moins) une solution de la forme \[f = \sum_{i=1}^{n} \alpha_i \cdot k(\cdot, x_i)\].
+	
+	De plus, si $P$ est strictement croissante, alors toute solution a cette forme.
+	
+\begin{proof}
+	Soit $H_0$ le sous espace engendré par $\{k(\cdot, x_i ) : i \in 1, \cdots, n\}$. Comme $H_0 \in H$, $H_0$ est fermé car de dimension finie. Alors le théorème de décomposition orthogonale nous dit que : $\forall f \in H, \; f = f_{H_0} + f_{{H_0}^\perp}$. \\
+	
+	De plus, comme $k$ est un noyau reproductif de $H$, on a $\forall x_i$ :
+	
+	\[f(x_i) = \langle k(\cdot, x_i), f \rangle_H = \langle k(\cdot, x_i), f_{H_0} \rangle_H + \langle k(\cdot, x_i), f_{{H_0}^\perp} \rangle_H = \langle k(\cdot, x_i), f_{H_0} \rangle_H = f_{H_0} (x_i) \]
+	
+	Alors :
+	
+	\begin{align*}
+		J(f) &\coloneqq E(f(x_1), \cdots, f(x_n)) + P(||f||_H^2) \\
+		&= E(f_{H_0}(x_1), \cdots, f_{H_0}(x_n)) + P(||f||_H^2) \\
+		&\geq E(f_{H_0}(x_1), \cdots, f_{H_0}(x_n)) + P(||f_{H_0}||_H^2) \text{ par croissance de $P$ car $||f||_H^2 = ||f_{H_0}||_H^2 + ||f_{{H_0}^\perp}||_H^2$}\\
+		&= J(f_{H_0})
+	\end{align*}
+	
+	Donc si $f$ est un minimiseur de $J$, alors $f_{H_0} \coloneqq \sum_{i=1}^{n} \alpha_i \cdot k(\cdot, x_i)$ aussi. Si $P$ est strictement croissante, alors l'inégalité est stricte et si l'on veut un minimiseur de $J$ il faut nécessairement qu'il soit de cette forme.
+\end{proof}
+
+\subsection{Lois suivant la largeur des couches $m$}
+
+\begin{itemize}
+	\item[$\bullet$] Loi de $ || u^0 ||_2^2$ pour $m$ grand
+	
+	Comme $ || u^0 ||_2^2 = \sum_{i=1}^{m} (u_i^0)^2 \sim \chi^2 (m)$ et $ u_i^0 \sim \chi^2 (1)$, en appliquant le TCL aux $ u_i^0 $, on a :
+	
+	\[
+	\frac{|| u^0 ||_2^2 - m}{\sqrt{2m}} \sim_{m \to \infty}  N(0, 1)
+	\]
+	
+	En particulier, $ || u^0 ||_2^2 \sim  m$  pour $m$ grand. \\
+	
+	\item[$\bullet$] Loi de $ \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x $ sachant $ u^0 $ \\
+	
+	$ (A^0 u^0)_i = \sum_{j=1}^m A_{ij}^0 u_j^0$. En sachant $u^0$, comme 
+	$A_{i \cdot}^0$ est un vecteur gaussien, $(A^0 u^0)_i \sim  N(0, || u^0 ||_2^2 ) $. 
+	
+	De même, part indépendance des $A_{ij}^0$, les $(A^0 u^0)_i$ sont indépendants et (conditionnellement à $u_0$) $A^0 u^0 \sim N(0_m, || u^0 ||_2^2 \; Id_m)$.
+	
+	Ainsi, la loi de $ \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x $ sachant $ u^0$ est $N(0_m, \left( \frac{x}{m^{\gamma}} \right)^2 || u^0 ||_2^2 \; Id_m) $. \\
+
+
+	\item[$\bullet$] Loi de $ || \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \; ||_2^2 $ pour $m$ grand
+	\\
+	
+	On a $ \left( \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \right)_i \sim  N(0,x^2)$ pour $m$ grand.
+	
+	De plus, $ \left( \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \right)_i^2 \sim  
+	x^2 \cdot  \chi^2 (1) $. En appliquant la LGN, $||\left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x \; ||_2^2 \sim m x^2$. \\
+	
+	
+	De la même manière que ci-dessus, on peut montrer les deux dernières lois : \\
+	
+	
+	\item[$\bullet$] Loi de $ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 $ sachant $x_2$, avec 
+	$x_2 = \left(\frac{1}{m^{\gamma}} A^0 \right) u^0 x$ \\
+	
+	On a 
+	$ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 | x_2 \sim N(0,  \frac{1}{m^{2\alpha}}||x_2||_2^2) $
+	\\
+	
+	\item[$\bullet$] Loi de $ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 $ pour $m$ grand\\
+	
+	On a $ \frac{1}{m^{\alpha}} (\beta^0)^T x_2 \sim N(0,  x^2 m^{1 - 2\alpha}) $
+	\\
+\end{itemize}
+
+\subsection{Ordre de grandeur des écarts relatifs}
+
+Preuve pour la norme opérateur : le corollaire 7.9 du cours de MIA de M. Giraud \cite{mia} nous donne une majoration sur $|A^0|_{op}$ : $|A^0|_{op} \leq \sqrt{m} + 7\sqrt{m + \xi} = \mathcal( \sqrt{m})$, avec $\xi \sim Exp(1)$.
+
+De plus, on peut trouver la la norme opérateur de $\Delta A$ comme suit : tout le travail est de trouver $|\beta^0 (u^0)^T|_{op} \coloneqq \sup \{||\beta^0 (u^0)^T x|| \; 
+\text{avec }||x|| = 1\}$.
+
+\begin{align}
+	(\beta^0 (u^0)^T)_{ij} &= \beta^0_i u^0_j \\
+	(\beta^0 (u^0)^T x)_i &= \sum_{j=1}^{m} (\beta^0 (u^0)^T)_{ij} \cdot x_j \\
+	&= \beta^0_i < u^0, x> \\
+	||\beta^0 (u^0)^T x|| &= |< u^0, x>| \cdot ||\beta^0||
+\end{align}
+
+Donc le $\sup$ est bien atteint en $x = u / ||u^0||$ et est égal à $||u^0|| \cdot ||\beta^0||$. En utilisant les approximations précédentes, on a donc $|\beta^0 (u^0)^T|_{op} \simeq m$. Ainsi on a $|\Delta A|_{op} \sim m^{2\alpha - 1} \cdot m^{-1/2 - \alpha} \cdot m \sim m^{\alpha - 1/2}.$ et :
+
+\[\frac{|\Delta A|_{op}}{|A^0|_{op}} \sim m^{\alpha - 1}\]
+
+\subsection{Choix de $\alpha$}
+
+Preuve de l'ordre de grandeur de $||\Delta \nabla_u \Phi||$ :
+\begin{align}
+	\Delta \nabla_u \Phi &\coloneqq \nabla_u \Phi (\theta^1, x) -  \nabla_u \Phi (\theta^0, x) \\
+	&\sim m^{-\alpha - 1/2} \underbrace{((\beta^1)^T A^1 - (\beta^0)^T A^0)}_\text{($\star$)} \\
+	(\star) &= (\beta^0 - \eta \nabla_{\beta} F(\Phi(\theta^0, x)))^T (A^0 - \eta \nabla_{A} F(\Phi(\theta^0, x))) - (\beta^0)^T A^0 \\
+	&= \eta^2 [\nabla_{\beta} F(\Phi)]^T[\nabla_{A} F(\Phi)] - \eta [\nabla_{\beta} F(\Phi)] A^0 - \eta \beta^0 [\nabla_{A} F(\Phi)] \\
+	&= (\Delta \beta)^T(\Delta A) + (\Delta \beta) A^0 + \beta^0 (\Delta A)
+\end{align}
+
+Donc :
+
+\begin{align}
+	||\Delta \nabla_u \Phi|| &\sim m^{-\alpha - 1/2} ||(\Delta \beta)^T(\Delta A) + (\Delta \beta) A^0 +  \beta^0 (\Delta A)|| \\
+	&\lesssim m^{-\alpha - 1/2} (||\Delta \beta|| \cdot |\Delta A|_{op} + ||\Delta \beta|| \cdot |A^0|_{op} + ||\beta^0|| \cdot |\Delta A|_{op}) \\
+	&\lesssim m^{-\alpha - 1/2} (m^{\alpha - 1/2}m^{\alpha - 1/2} + m^{\alpha - 1/2}m^{1/2} + m^{1/2}m^{\alpha - 1/2}) \\
+	&\lesssim m^{-\alpha - 1/2} (m^{\alpha - 1/2}m^{1/2} + m^{\alpha - 1/2}m^{1/2} + m^{1/2}m^{\alpha - 1/2}) \\
+	&\lesssim m^{-1/2}
+\end{align}
+
+C'est-à-dire que $||\Delta \nabla_u \Phi|| = \mathcal{O}(m^{-1/2})$ pour $m$ grand. \\
+
+Par la même démarche on trouve $||\Delta \nabla_{\beta} \Phi|| = \mathcal{O}(m^{-1/2})$ et $||\Delta \nabla_{A} \Phi||_F = \mathcal{O}(m^{-1/2})$ pour $m$ grand. \\
+
+Preuve que
+$F(\Phi(\theta^{T}, x)) = F(\Phi(\theta^{0}, x)) + \langle \theta^{T}-\theta^0 , \nabla_{\theta} F(\Phi(\theta^0, x))  \rangle  + \mathcal{O}(m^{-1/2})$ :
+
+En faisant un développement de Taylor, on a :
+
+	\begin{align*}
+	F(\Phi(\theta^{t+1}, x)) - F(\Phi(\theta^t, x))&= \langle \theta^{t+1}-\theta^t , \nabla_{\theta} F(\Phi(\theta^t, x))  \rangle  + \mathcal{O}(m^{-1/2}) \\
+	\Longrightarrow \sum_{t=0}^{T-1} F(\Phi(\theta^{t+1}, x)) - F(\Phi(\theta^t, x)) &= \sum_{t=0}^{T-1} \langle \theta^{t+1}-\theta^t , \nabla_{\theta} F(\Phi(\theta^t, x))  \rangle  + \mathcal{O}(m^{-1/2}) \\
+	\Longleftrightarrow F(\Phi(\theta^{T}, x)) - F(\Phi(\theta^{0}, x)) &= \sum_{t=0}^{T-1} \langle \theta^{t+1}-\theta^t , \nabla_{\theta} F(\Phi(\theta^0, x))  \rangle  + \mathcal{O}(m^{-1/2}) \\
+	\Longleftrightarrow	F(\Phi(\theta^{T}, x)) &= F(\Phi(\theta^{0}, x)) + \langle \theta^{T}-\theta^0 , \nabla_{\theta} F(\Phi(\theta^0, x))  \rangle  + \mathcal{O}(m^{-1/2})
+\end{align*}
+
+\subsection{Cas simple}
+
+\[\frac{\partial g(u)}{\partial u_j} = \frac{1}{m} \phi '(u_j)\]
+
+\begin{align}
+	||\nabla g(u) ||^2 &= \frac{1}{m^2} \sum_{j=1}^{m} (\phi '(u_j))^2 \\
+	&\simeq \frac{1}{m} \mathbb{E}((\phi '(u_j))^2) \text{ pour $m$ grand par la LGN}
+\end{align}
+
+$||D^2 g(u)||_{op} = \sup \{||D^2 g(u) \, x|| \text{ avec } ||x|| = 1\}$
+
+\begin{align}
+	(D^2 g(u) \, x)_i &= \sum_{j=1}^{m} (D^2 g(u) \, x)_{ij} \, x_j \\
+	&= \sum_{j=1}^{m} \frac{\partial g(u)}{\partial u_i \partial u_j} \, x_j \\
+	&= \frac{1}{m} \phi ''(u_i) \, x_i \text{ car la dérivée seconde est nulle si $i \neq j$}
+\end{align}
+
+Donc
+
+\begin{align*}
+	||D^2 g(u) \, x||^2 &= \frac{1}{m^2} \sum_{j=1}^{m} x_i^2 (\phi ''(u_i))^2 \\
+	&\leq \frac{1}{m^2} \sup_i (\phi ''(u_i))^2 \sum_{j=1}^{m} x_i^2 \\
+	&= \frac{1}{m^2} \sup_i (\phi ''(u_i))^2 \text{ car $||x|| = 1$} \\
+	&= \frac{1}{m^2} (\sup_i |\phi ''(u_i)|)^2 \\
+	&= \frac{1}{m^2} (|\phi ''|_{\infty})^2
+\end{align*}
+
+Ainsi, \[||D^2 g(u)||_{op} \leq \frac{|\phi ''|_{\infty}}{m}\]
+
+\subsection{Dérivées premières}
+
+\begin{property}
+	Pour toute matrice réelle $A$, $||A||_{op}^2 = ||A^T A||_{op}$, et $||A||_{op} = ||A^T||_{op}$.
+\end{property}
+\begin{proof}
+	Soit $v$ le vecteur pour lequel le suprémum est atteint dans la définition de $||A||_{op}$ :
+	\begin{align*}
+		||A||_{op}^2 = ||Av||^2 &= \langle Av, Av \rangle \\
+		&= \langle A^T Av, v \rangle \\
+		&\leq ||A^T Av|| \cdot ||v|| \text{ par CS}\\
+		&= ||A^T A||_{op} \cdot ||v|| \text{ par définition de $||\cdot||_{op}$ et car $||v|| = 1$}\\
+		&= ||A^T A||_{op} \\
+		&\leq ||A^T||_{op} ||A||_{op} \text{ car $||\cdot||_{op}$ est sous-multiplicative}
+	\end{align*}
+	
+	Alors $||A||_{op} \leq ||A^T||_{op}$. En substituant $A^T$ à $A$, on a aussi $||A^T||_{op} \leq ||A||_{op}$ et donc $||A^T||_{op} ||A||_{op} \leq ||A||_{op}^2$. On a encadré $||A^T A||_{op}$ par $||A||_{op}^2$ ce qui conclue la preuve.
+\end{proof}
+
+En appliquant cette propriété, $||Dg(u)||_{op} = ||Dg(u)Dg(u)^T||_{op}^{1/2}$.
+
+\begin{align*}
+	Dg(u) &=
+	\begin{bmatrix}
+		D_{u_1}g(u) & \cdots & D_{u_m}g(u)
+	\end{bmatrix} \in \mathbb{R}^{n \times (d\cdot m)}\\
+	&= \frac{1}{m} \begin{bmatrix}
+		D \phi(u_1) & \cdots & D \phi(u_m)
+	\end{bmatrix}
+\end{align*}
+
+\[ 
+Dg(u) Dg(u)^T =
+\begin{bmatrix}
+	D_{u_1}g(u) & \cdots & D_{u_m}g(u)
+\end{bmatrix}
+\begin{bmatrix}
+	D_{u_1}g(u)^T \\
+	\vdots \\
+	D_{u_m}g(u)^T
+\end{bmatrix}
+= \frac{1}{m^2} \sum_{j=1}^{m} D \phi(u_j) D \phi(u_j)^T
+\]
+
+Asymptotiquement en le nombre $m$ de couche, on a par la LGN :
+
+\[Dg(u^0) Dg(u^0)^T \simeq \frac{1}{m} \mathbb{E}(D \phi(u^0_j) D \phi(u^0_j)^T)\]
+
+Par continuité de la norme, on a pour $m$ grand :
+
+\[||Dg(u)||_{op} = ||Dg(u)Dg(u)^T||_{op}^{1/2} \simeq \frac{1}{\sqrt{m}} ||\mathbb{E}(D \phi(u^0_j) D \phi(u^0_j)^T)||_{op}^{1/2}\]
+
+\subsection{Dérivées secondes}
+
+\[\frac{\partial^2 g(u)}{\partial u_{jk} \partial u_{j'k'}} = \frac{1}{m} \frac{\partial^2 \phi (u_j)}{\partial u_{jk} \partial u_{j'k'}} {\bf 1}_{j = j'} \]
+
+$D^2 g(u)$ est de dimension $(d\cdot m) \times (d\cdot m)$, et est une matrice diagonale par blocs de dimension $d\cdot d$, dont la diagonale est composée des $\frac{1}{m} D^2 \phi (u_j)$. \\
+
+\begin{property}
+	Pour toute matrice réelle symétrique, $||A||_{op} = \sup_{||x|| \leq 1} |x^T A x|$
+\end{property}
+\begin{proof}
+	En diagonalisant $A$ en $QDQ^T$ :
+	\begin{itemize}
+		\item[$\bullet$]
+		\begin{align*}
+			\sup_{||x|| \leq 1} |x^T A x| &= \sup_{||x|| \leq 1} |x^T QDQ^T x| \\
+			&= \sup_{||y|| \leq 1} |y^T Dy| \text{ en posant $y \coloneqq Q^T x$ car $Q$ est orthogonale.}  \\
+			&= \sup_{||y|| \leq 1} \left | \sum_{k} y_k^2 \lambda_k \right | \\
+			&= |\lambda_{min}| \lor |\lambda_{max}| \text{ en mettant tout le poids sur la valeur propre la plus extrême.}
+		\end{align*}
+		
+		\item[$\bullet$]
+		\begin{align*}
+			||A||_{op}^2 &\coloneqq \sup_{||x|| \leq 1} ||Ax||_2^2 \\
+			&= \sup_{||x|| \leq 1} x^T A^T A x \\
+			&= \sup_{||y|| \leq 1} y^T D^2 y \\
+			&= \sup_{||y|| \leq 1} \left | \sum_{k} y_k^2 \lambda_k^2 \right | \\
+			&= (\lambda_{min})^2 \lor (\lambda_{max})^2 \text{ par le même argument que ci-dessus}
+		\end{align*}
+		
+		En prenant la racine carrée, on retrouve bien le résultat souhaité.
+	\end{itemize}
+	
+\end{proof}
+
+Ainsi :
+
+\begin{align*}
+	||D^2 g(u)||_{op} &= \sup_{||x|| \leq 1} |x^T D^2 g(u) x| \\
+	&= \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \frac{1}{m} \left | \sum_{j=1}^{m} x_j^T D^2 \phi (u_j) x_j \right | \text{ en effectuant un calcul par bloc.} \\
+	&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \sum_{j=1}^{m} \left | x_j^T D^2 \phi (u_j) x_j \right | \\
+	&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \sum_{j=1}^{m} \left | x_j^T D^2 \phi (u_j) x_j \right | \\
+	&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \sum_{j=1}^{m} ||D^2 \phi (u_j) x_j|| \cdot ||x_j|| \text{ par CS} \\
+	&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \sum_{j=1}^{m} ||D^2 \phi (u_j)||_{op} \cdot ||x_j||^2 \text{ par définition de $||\cdot||_{op}$} \\
+	&\leq \frac{1}{m} \sup_{\sum_{j=1}^{m} ||x_j||^2 \leq 1} \max_{j=1\cdots m} ||D^2 \phi (u_j)||_{op} \sum_{j=1}^{m} ||x_j||^2 \\
+	&\leq \frac{1}{m} \max_{j=1\cdots m} ||D^2 \phi (u_j)||_{op}
+\end{align*}
+
+\subsection{Bornes à horizon fini : preuve du théorème}
+
+\begin{theorem}
+	Si $h(w_0) = 0$, alors pour un $T > 0$, on a :
+	\begin{itemize}
+		\item[$\bullet$] $\sup_{t \in [0, T]} ||w_{\alpha}(t) - w_0|| = \mathcal{O}(1 / \alpha)$
+		\item[$\bullet$] $\sup_{t \in [0, T]} ||w_{\alpha}(t) - \bar{w}_{\alpha}(t)|| = \mathcal{O}(1 / \alpha^2)$
+		\item[$\bullet$] $\sup_{t \in [0, T]} ||\alpha h(w_{\alpha}(t)) - \alpha \bar{h}(\bar{w}_{\alpha}(t))|| = \mathcal{O}(1 / \alpha)$
+	\end{itemize}
+\end{theorem}
+\begin{proof}
+	Soient $y(t) \coloneqq \alpha h(w_{\alpha}(t))$ et $\bar{y}(t) \coloneqq \alpha \bar{h}(\bar{w}_{\alpha}(t))$. On a donc 
+	\begin{align*}
+		y'(t) &= \alpha Dh(w_{\alpha}(t)) \cdot - \frac{1}{\alpha} Dh (w_{\alpha}(t))^T \nabla R (y(t)) \\
+		&= - Dh(w_{\alpha}(t)) Dh (w_{\alpha}(t))^T \nabla R(y(t)) \\
+		\bar{y}'(t) &= \alpha Dh(w_0) \cdot - \frac{1}{\alpha} Dh (w_0)^T \nabla R(\bar{y}(t)) \\
+		&= - Dh(w_0)Dh (w_0)^T \nabla R (\bar{y}(t))
+	\end{align*}
+	
+	On pose $\Sigma (w) \coloneqq Dh(w) \cdot Dh (w)^T$ pour simplifier les calculs. On a de même $y(0) = \bar{y}(0) = \alpha h(w_0) = 0$.
+	
+	Posons $C$ une constante, pouvant changer suivant les lignes, indépendante de $\alpha$.
+	
+	\[\int_0^T ||w_{\alpha}'(t)|| dt = \int_0^T ||\nabla F(w_{\alpha}(t))|| dt \stackrel{C.S}{\leq} \sqrt{T} \left( \int_0^T ||\nabla F(w_{\alpha}(t))||^2 dt \right)^{1/2} \] \\
+	
+	Or $\frac{d}{dt} F(w_{\alpha}(t)) = \nabla F(w_{\alpha}(t)) \cdot w_{\alpha}'(t) = -||\nabla F(w_{\alpha}(t))||^2$. \\
+	
+	On en déduit :
+	
+	\[\sup_{t \in [0, T]} ||w_{\alpha}(t) - w_0|| = \norm{\int_0^{t_{sup}} w_{\alpha}'(t) dt}  \leq \int_0^{t_{sup}} ||w_{\alpha}'(t)|| dt \leq (t_{sup} \cdot F_{\alpha}(w_{\alpha}(0)))^{1/2} \lesssim C / \alpha\]
+	
+	et que $\sup_{t \in [0, T]} ||y(t) - y(0)|| \leq C$ et $\sup_{t \in [0, T]} ||\nabla R(y(t))|| \leq C$. On a retrouvé le premier résultat. \\
+	
+	Posons $\Delta (t) \coloneqq ||y(t) - \bar{y}(t)||_{\mathcal{F}}$. On a $\Delta(0) = 0$ et $\Delta '(t) = \langle \frac{y(t) - \bar{y}(t)}{||y(t) - \bar{y}(t)||_{\mathcal{F}}}, y'(t) - \bar{y}'(t) \rangle$. Et par C-S :
+	
+	\begin{align*}
+		\Delta ' (t) &\leq ||\Sigma(w_{\alpha}(t)) \nabla R (y(t)) - \Sigma(w_0) \nabla R (\bar{y}(t))||_{\mathcal{F}}\\
+		&= ||(\Sigma(w_{\alpha}(t)) - \Sigma(w_0)) \nabla R (y(t)) + \Sigma(w_0) (\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{\mathcal{F}} \\ 
+		&\stackrel{I.T}{\leq} ||(\Sigma(w_{\alpha}(t)) - \Sigma(w_0)) \nabla R (y(t))||_{\mathcal{F}} + ||\Sigma(w_0) (\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{\mathcal{F}} \\
+		&\leq ||\Sigma(w_{\alpha}(t)) - \Sigma(w_0)||_{op} \cdot || \nabla R (y(t))||_{\mathcal{F}} + ||\Sigma(w_0)||_{op}\cdot||\nabla R (y(t)) - \nabla R (\bar{y}(t)))||_{\mathcal{F}} \\
+		&\leq C_1 / \alpha + C_2 \cdot \Delta(t)
+	\end{align*}
+	
+	Or l'équation différentielle $u'(t) =  C_1 / \alpha + C_2 \cdot u(t)$ avec $u(0) = 0$ a une unique solution qui est $u(t) = \frac{C_1}{\alpha C_2} (\exp(C_2 t) - 1)$. Donc d'après le théorème de Petrovitsch, $\Delta(t) \leq \frac{C_1}{\alpha C_2} (\exp(C_2 t) - 1) \leq C / \alpha$. D'où le troisième résultat. \\
+	
+	Maintenant posons $\delta(t) \coloneqq ||w_{\alpha}(t) - \bar{w}_{\alpha}(t)||$.  $\delta '(t) = \langle \frac{w_{\alpha}(t) - \bar{w}_{\alpha}(t)}{||w_{\alpha}(t) - \bar{w}_{\alpha}(t)||}, w_{\alpha}'(t) - \bar{w}_{\alpha}'(t) \rangle$. Et par C-S :
+	
+	\begin{align*}
+		\delta ' (t) &\leq \alpha^{-1} ||Dh (w_{\alpha}(t))^T \nabla R (y(t)) - Dh (w_0)^T \nabla R (\bar{y}(t))|| \\
+		&= \alpha^{-1} ||(Dh (w_{\alpha}(t))^T - Dh (w_0)^T)\nabla R (y(t)) + Dh (w_0)^T (\nabla R (y(t)) - \nabla R (\bar{y}(t)))|| \\
+		&\leq \alpha^{-1} ||Dh (w_{\alpha}(t))^T - Dh (w_0)^T||_{op}\cdot||\nabla R (y(t))||_{\mathcal{F}} + \alpha^{-1} ||Dh (w_0)^T||_{op} \cdot ||\nabla R (y(t)) - \nabla R (\bar{y}(t))|| _{\mathcal{F}}\\
+		&\leq C / \alpha^2 + C / \alpha^2
+	\end{align*}
+	
+	En intégrant par rapport à $t$, on retrouve le deuxième résultat. 
+	
+\end{proof}
+
+\bibliographystyle{plain}
+\bibliography{biblio.bib}
 
 \end{document}
